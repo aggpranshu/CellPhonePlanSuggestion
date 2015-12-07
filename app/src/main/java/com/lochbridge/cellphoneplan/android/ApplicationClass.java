@@ -25,31 +25,26 @@ public class ApplicationClass extends Application {
             this.dataUsage = 50;
         }
         if(dataUsage==2){
-            this.dataUsage = 150;
-        }
-        if(dataUsage==3){
             this.dataUsage = 250;
         }
+        if(dataUsage==3){
+            this.dataUsage = 750;
+        }
         if(dataUsage==4){
-            this.dataUsage = 400;
-        }
-        if(dataUsage==5){
-            this.dataUsage = 650;
-        }
-        if(dataUsage==6){
-            this.dataUsage = 900;
-        }
-        if(dataUsage==7){
             this.dataUsage = 1500;
         }
-        if(dataUsage==8){
-            this.dataUsage = 3000;
+        if(dataUsage==5){
+            this.dataUsage = 2500;
         }
-        if(dataUsage==9){
+        if(dataUsage==6){
+            this.dataUsage = 3500;
+        }
+        if(dataUsage==7){
+            this.dataUsage = 4500;
+        }
+        if(dataUsage==8){
             this.dataUsage = 5000;
         }
-
-        this.dataUsage = dataUsage;
     }
 
     public String getProviderName() {

@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         spinnerData =(Spinner)findViewById(R.id.spinnerData);
 
         carrierName = (TextView) findViewById(R.id.carrierName);
-        carrierName.append(": "+ ((ApplicationClass) getApplication()).getProviderName());
+        carrierName.append(": " + ((ApplicationClass) getApplication()).getProviderName());
 
         validityOfPlans.add("Days for plans");
         validityOfPlans.add("28 days");
@@ -81,14 +81,13 @@ public class MainActivity extends AppCompatActivity {
 
         listDataRange.add("Select your Data Usage");
         listDataRange.add("0-100 MB");
-        listDataRange.add("100-200 MB");
-        listDataRange.add("200-300 MB");
-        listDataRange.add("300-500 MB");
-        listDataRange.add("500-800 MB");
-        listDataRange.add("800-1000 MB");
-        listDataRange.add("1-2 GB");
-        listDataRange.add("2-4 GB");
-        listDataRange.add("Above 4 GB");
+        listDataRange.add("100-500 MB");
+        listDataRange.add("500MB - 1GB");
+        listDataRange.add("1GB - 2GB");
+        listDataRange.add("2GB - 3GB");
+        listDataRange.add("3GB - 4GB");
+        listDataRange.add("4GB - 5GB");
+        listDataRange.add("Above 5GB");
 
         buttonDate.setVisibility(View.INVISIBLE);
         buttonData.setVisibility(View.INVISIBLE);
@@ -165,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
                 String item = parent.getItemAtPosition(position).toString();
 
                 if (item.equals("List of Circles")) {
-                   // Toast.makeText(getApplicationContext(), "hello", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), String.valueOf(position) , Toast.LENGTH_SHORT).show();
                     // spinnerDuration.setVisibility(View.VISIBLE);
                     // spinnerDuration.setVisibility(View.INVISIBLE);
                 } else {
