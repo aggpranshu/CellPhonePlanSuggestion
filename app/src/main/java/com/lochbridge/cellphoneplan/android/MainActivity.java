@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         spinnerData =(Spinner)findViewById(R.id.spinnerData);
 
         carrierName = (TextView) findViewById(R.id.carrierName);
-        carrierName.append(((ApplicationClass) getApplication()).getProviderName());
+        carrierName.append(": "+ ((ApplicationClass) getApplication()).getProviderName());
 
         validityOfPlans.add("Days for plans");
         validityOfPlans.add("28 days");
@@ -112,7 +112,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 spinnerCircleList.performClick();
-                buttonDuration.setVisibility(View.VISIBLE);
             }
         });
 
@@ -120,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 spinnerDuration.performClick();
-                buttonData.setVisibility(View.VISIBLE);
+
             }
         });
 
@@ -128,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 spinnerData.performClick();
-                buttonDate.setVisibility(View.VISIBLE);
+
             }
         });
 
@@ -177,6 +176,7 @@ public class MainActivity extends AppCompatActivity {
                             .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     spinnerDuration.setAdapter(dataAdapterDurationList);
                     ((ApplicationClass) getApplication()).setCircleName(item);
+                    buttonDuration.setVisibility(View.VISIBLE);
                 }
 
             }
@@ -207,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
                     dataAdapterCircleList
                             .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     spinnerData.setAdapter(dataAdapterCircleList);
-
+                    buttonData.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -225,6 +225,7 @@ public class MainActivity extends AppCompatActivity {
 
                 } else {
                     ((ApplicationClass)getApplication()).setDataUsage(position);
+                    buttonDate.setVisibility(View.VISIBLE);
                     new BgAsyncTaskForPlanByDuration().execute();
                 }
             }

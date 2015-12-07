@@ -17,9 +17,8 @@
         android:id="@+id/textView"
         android:gravity="center"
         android:textSize="50dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_marginTop="139dp" />
+        android:layout_above="@+id/progressBar"
+        android:layout_centerHorizontal="true" />
 
     <ProgressBar
         android:layout_width="wrap_content"
@@ -29,18 +28,21 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="66dp" />
 
-    <EditText
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/editText"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
-
-    <Button
+    <Spinner
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Submit"
-        android:id="@+id/button"
-        android:layout_alignTop="@+id/progressBar"
-        android:layout_centerHorizontal="true" />
+        android:id="@+id/spinnerProvider"
+        android:spinnerMode="dialog"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="59dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select your circle"
+        android:id="@+id/textView2"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:textSize="30dp" />
 </RelativeLayout>
