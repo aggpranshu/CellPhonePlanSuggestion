@@ -1,6 +1,7 @@
 
 package com.lochbridge.cellphoneplan.android;
 
+import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -37,8 +38,8 @@ import com.lochbridge.cellphoneplan.urls.URLClass;
 public class CallLogStats extends Activity {
 
     List<ListPlanDetailsByDuration> listPlanDetailsByDuration;
-    private String providerName;
     CallLogs object;
+    private String providerName;
     private Button buttonBill;
     private TextView totalDayCallsTv;
     private TextView totalNightCallsTv;
@@ -142,12 +143,11 @@ public class CallLogStats extends Activity {
                     truncatedNumber = number;
 
                 if (callLogsDataMap.containsKey(truncatedNumber)) {
-                     object = callLogsDataMap.get(truncatedNumber);
+                    object = callLogsDataMap.get(truncatedNumber);
                     object.setDuration(Integer.valueOf(duration), callDate);
 
                 } else {
-                     object = new CallLogs(truncatedNumber, duration, callDate,
-                            providerName);
+                    object = new CallLogs(truncatedNumber);
                     object.setDuration(Integer.valueOf(duration), callDate);
                     object.setSmsCount(smsCount);
                 }
@@ -184,12 +184,15 @@ public class CallLogStats extends Activity {
                 String jsonMap = new Gson().toJson(callLogsDataMap);
                 Log.i("jsonmap", jsonMap);
 
+                String url = URLClass.baseURL  + URLClass.userDataURL +((ApplicationClass) getApplication()).getProviderName() + "/" +
+                        ((ApplicationClass) getApplication()).getCircleName() + "/" + URLClass.aggregationURL;
+
+
                 RestTemplate restTemplate = new RestTemplate(true);
                 restTemplate.getMessageConverters().add(new StringHttpMessageConverter());
                 restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
                 aggregatedLogStats = restTemplate.postForObject(
-                        URLClass.baseURL+URLClass.aggregationURL,
-                        callLogsDataMap, AggregatedLogStats.class);
+                        url, callLogsDataMap, AggregatedLogStats.class);
                 return aggregatedLogStats;
             } catch (Exception e) {
                 Log.e("MainActivity", e.getMessage(), e);
@@ -206,14 +209,15 @@ public class CallLogStats extends Activity {
         @Override
         protected void onPostExecute(AggregatedLogStats aggregatedLogStats) {
             super.onPostExecute(aggregatedLogStats);
-            totalDayCallsTv.setText(String.valueOf(aggregatedLogStats
-                    .getTotalCallDuringDayInSeconds()) + " sec");
-            totalNightCallsTv.setText(String.valueOf(aggregatedLogStats
-                    .getTotalCallDuringNightInSeconds()) + " sec");
-            totalCallsTv.setText(String.valueOf(aggregatedLogStats.getTotalCallDuringDayInSeconds()
-                    + aggregatedLogStats.getTotalCallDuringNightInSeconds())
-                    +
-                    " sec");
+            /*
+             * totalDayCallsTv.setText(String.valueOf(aggregatedLogStats
+             * .getTotalCallDuringDayInSeconds()) + " sec");
+             * totalNightCallsTv.setText(String.valueOf(aggregatedLogStats
+             * .getTotalCallDuringNightInSeconds()) + " sec");
+             * totalCallsTv.setText(String.valueOf(aggregatedLogStats
+             * .getTotalCallDuringDayInSeconds() +
+             * aggregatedLogStats.getTotalCallDuringNightInSeconds()) + " sec");
+             */
 
             // Toast.makeText(getApplicationContext(), aggregatedLogStats.toString(),
             // Toast.LENGTH_SHORT).show();

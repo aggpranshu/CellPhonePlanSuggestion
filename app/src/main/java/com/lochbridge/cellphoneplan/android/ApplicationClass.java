@@ -1,8 +1,9 @@
+
 package com.lochbridge.cellphoneplan.android;
 
-import android.app.Application;
-
 import org.springframework.util.StringUtils;
+
+import android.app.Application;
 
 /**
  * Created by PAggarwal1 on 11/2/2015.
@@ -13,38 +14,16 @@ public class ApplicationClass extends Application {
 
     private String circleName;
 
-    private  String providerName;
-    private  int dataUsage;
+    private String providerName;
 
-    public int getDataUsage() {
+    private String dataUsage;
+
+    public String getDataUsage() {
         return dataUsage;
     }
 
-    public void setDataUsage(int dataUsage) {
-        if(dataUsage==1){
-            this.dataUsage = 50;
-        }
-        if(dataUsage==2){
-            this.dataUsage = 250;
-        }
-        if(dataUsage==3){
-            this.dataUsage = 750;
-        }
-        if(dataUsage==4){
-            this.dataUsage = 1500;
-        }
-        if(dataUsage==5){
-            this.dataUsage = 2500;
-        }
-        if(dataUsage==6){
-            this.dataUsage = 3500;
-        }
-        if(dataUsage==7){
-            this.dataUsage = 4500;
-        }
-        if(dataUsage==8){
-            this.dataUsage = 5000;
-        }
+    public void setDataUsage(String dataUsage) {
+        this.dataUsage = dataUsage;
     }
 
     public String getProviderName() {

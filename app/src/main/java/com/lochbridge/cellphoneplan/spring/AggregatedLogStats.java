@@ -1,73 +1,188 @@
+
 package com.lochbridge.cellphoneplan.spring;
 
 import java.io.Serializable;
 
-public class AggregatedLogStats implements Serializable{
+public class AggregatedLogStats implements Serializable {
+    private int ldsInSeconds;
 
-    private int totalCallDuringDayInSeconds;
+    private int lddInSeconds;
 
-    private double totalCallDuringDayInMinutes;
+    private int lnsInSeconds;
 
-    private int totalCallDuringNightInSeconds;
+    private int lndInSeconds;
 
-    private double totalCallDuringNightInMinutes;
+    private int sdsInSeconds;
 
-    private int totalCalls;
+    private int sddInSeconds;
+
+    private int snsInSeconds;
+
+    private int sndInSeconds;
 
     private int smsCount;
 
+
+    /**
+     * @return the smsCount
+     */
     public int getSmsCount() {
+
         return smsCount;
     }
 
-    public int getTotalCalls() {
-        return totalCalls;
+
+
+    /**
+     * @param smsCount the smsCount to set
+     */
+    public void setSmsCount(int smsCount) {
+
+        this.smsCount = smsCount;
     }
 
 
+    /**
+     * @return the ldsInSeconds
+     */
+    public int getLdsInSeconds() {
 
-    public int getTotalCallDuringDayInSeconds() {
-
-        return totalCallDuringDayInSeconds;
+        return ldsInSeconds;
     }
 
-    public void setTotalCallDuringDayInSeconds(
-            int totalCallDuringDayInSeconds) {
 
-        this.totalCallDuringDayInSeconds = totalCallDuringDayInSeconds;
+    /**
+     * @param ldsInSeconds the ldsInSeconds to set
+     */
+    public void setLdsInSeconds(int ldsInSeconds) {
+
+        this.ldsInSeconds = ldsInSeconds;
     }
 
-    public double getTotalCallDuringDayInMinutes() {
 
-        return totalCallDuringDayInMinutes;
+    /**
+     * @return the lddInSeconds
+     */
+    public int getLddInSeconds() {
+
+        return lddInSeconds;
     }
 
-    public void setTotalCallDuringDayInMinutes(
-            double totalCallDuringDayInMinutes) {
 
-        this.totalCallDuringDayInMinutes = totalCallDuringDayInMinutes;
+    /**
+     * @param lddInSeconds the lddInSeconds to set
+     */
+    public void setLddInSeconds(int lddInSeconds) {
+
+        this.lddInSeconds = lddInSeconds;
     }
 
-    public int getTotalCallDuringNightInSeconds() {
 
-        return totalCallDuringNightInSeconds;
+    /**
+     * @return the lnsInSeconds
+     */
+    public int getLnsInSeconds() {
+
+        return lnsInSeconds;
     }
 
-    public void setTotalCallDuringNightInSeconds(
-            int totalCallDuringNightInSeconds) {
 
-        this.totalCallDuringNightInSeconds = totalCallDuringNightInSeconds;
+    /**
+     * @param lnsInSeconds the lnsInSeconds to set
+     */
+    public void setLnsInSeconds(int lnsInSeconds) {
+
+        this.lnsInSeconds = lnsInSeconds;
     }
 
-    public double getTotalCallDuringNightInMinutes() {
 
-        return totalCallDuringNightInMinutes;
+    /**
+     * @return the lndInSeconds
+     */
+    public int getLndInSeconds() {
+
+        return lndInSeconds;
     }
 
-    public void setTotalCallDuringNightInMinutes(
-            double totalCallDuringNightInMinutes) {
 
-        this.totalCallDuringNightInMinutes = totalCallDuringNightInMinutes;
+    /**
+     * @param lndInSeconds the lndInSeconds to set
+     */
+    public void setLndInSeconds(int lndInSeconds) {
+
+        this.lndInSeconds = lndInSeconds;
+    }
+
+
+    /**
+     * @return the sdsInSeconds
+     */
+    public int getSdsInSeconds() {
+
+        return sdsInSeconds;
+    }
+
+
+    /**
+     * @param sdsInSeconds the sdsInSeconds to set
+     */
+    public void setSdsInSeconds(int sdsInSeconds) {
+
+        this.sdsInSeconds = sdsInSeconds;
+    }
+
+
+    /**
+     * @return the sddInSeconds
+     */
+    public int getSddInSeconds() {
+
+        return sddInSeconds;
+    }
+
+
+    /**
+     * @param sddInSeconds the sddInSeconds to set
+     */
+    public void setSddInSeconds(int sddInSeconds) {
+
+        this.sddInSeconds = sddInSeconds;
+    }
+
+
+    /**
+     * @return the snsInSeconds
+     */
+    public int getSnsInSeconds() {
+
+        return snsInSeconds;
+    }
+
+
+    /**
+     * @param snsInSeconds the snsInSeconds to set
+     */
+    public void setSnsInSeconds(int snsInSeconds) {
+
+        this.snsInSeconds = snsInSeconds;
+    }
+
+
+    /**
+     * @return the sndInSeconds
+     */
+    public int getSndInSeconds() {
+
+        return sndInSeconds;
+    }
+
+
+    /**
+     * @param sndInSeconds the sndInSeconds to set
+     */
+    public void setSndInSeconds(int sndInSeconds) {
+
+        this.sndInSeconds = sndInSeconds;
     }
 
 }

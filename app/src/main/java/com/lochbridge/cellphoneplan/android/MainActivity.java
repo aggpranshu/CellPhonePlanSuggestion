@@ -80,13 +80,12 @@ public class MainActivity extends AppCompatActivity {
         validityOfPlans.add("90 days");
 
         listDataRange.add("Select your Data Usage");
-        listDataRange.add("0-100 MB");
-        listDataRange.add("100-500 MB");
+        listDataRange.add("0 - 100 MB");
+        listDataRange.add("100 - 300 MB");
+        listDataRange.add("300MB - 500MB");
         listDataRange.add("500MB - 1GB");
-        listDataRange.add("1GB - 2GB");
-        listDataRange.add("2GB - 3GB");
-        listDataRange.add("3GB - 4GB");
-        listDataRange.add("4GB - 5GB");
+        listDataRange.add("1GB - 3GB");
+        listDataRange.add("3GB - 5GB");
         listDataRange.add("Above 5GB");
 
         buttonDate.setVisibility(View.INVISIBLE);
@@ -223,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
                 if (item.equals("Select your Data Usage")) {
 
                 } else {
-                    ((ApplicationClass)getApplication()).setDataUsage(position);
+                    ((ApplicationClass)getApplication()).setDataUsage(item);
                     buttonDate.setVisibility(View.VISIBLE);
                     new BgAsyncTaskForPlanByDuration().execute();
                 }
