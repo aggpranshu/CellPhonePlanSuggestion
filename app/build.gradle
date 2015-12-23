@@ -28,6 +28,7 @@ android {
 
 repositories {
     mavenCentral()
+    maven { url "https://jitpack.io" }
 }
 
 dependencies {
@@ -40,5 +41,7 @@ dependencies {
     compile 'com.android.support:design:23.1.0'
     compile 'org.springframework.android:spring-android-rest-template:1.0.1.RELEASE'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.3.2'
+    compile 'com.github.PhilJay:MPAndroidChart:v2.1.6'
+    compile 'com.github.ViksaaSkool:AwesomeSplash:v1.0.0'
     compile project(':libmultispinner')
 }

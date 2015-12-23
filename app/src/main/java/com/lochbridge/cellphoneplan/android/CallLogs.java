@@ -13,10 +13,17 @@ class CallLogs implements Serializable {
     private Long number;
     private int durationDay;
     private int durationNight;
-    private int durationMoreThan30;
-    private int durationLessThan30;
     private int totalCalls;
     private int smsCount;
+    private int durationInSeconds;
+
+    public int getDurationInSeconds() {
+        return durationInSeconds;
+    }
+
+    public void setDurationInSeconds(int durationInSeconds) {
+        this.durationInSeconds = durationInSeconds;
+    }
 
     CallLogs(String number) {
         this.number = Long.valueOf(number);
@@ -32,22 +39,6 @@ class CallLogs implements Serializable {
 
     public void setTotalCalls(int totalCalls) {
         this.totalCalls = totalCalls;
-    }
-
-    public int getDurationMoreThan30() {
-        return durationMoreThan30;
-    }
-
-    public void setDurationMoreThan30(int durationMoreThan30) {
-        this.durationMoreThan30 = durationMoreThan30;
-    }
-
-    public int getDurationLessThan30() {
-        return durationLessThan30;
-    }
-
-    public void setDurationLessThan30(int dutrationLessThan30) {
-        this.durationLessThan30 = dutrationLessThan30;
     }
 
     public int getDurationDay() {
@@ -76,11 +67,8 @@ class CallLogs implements Serializable {
 
     public void setDuration(int duration, Date d) {
 
-        if (duration > 30) {
-            durationMoreThan30 += duration;
-        } else if (duration < 30) {
-            durationLessThan30 += duration;
-        }
+        durationInSeconds += duration;
+
         this.totalCalls += Math.ceil(Double.valueOf(duration) / 60.0);
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");

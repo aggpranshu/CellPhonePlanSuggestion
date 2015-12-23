@@ -27,11 +27,12 @@ import org.json.JSONObject;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BillList extends AppCompatActivity {
 
-    private List<BillPlans> billPlans;
+    private List<BillPlans> initialBillPlans;
     private TableLayout stk;
 
     @Override
@@ -42,12 +43,32 @@ public class BillList extends AppCompatActivity {
 
         BillPlansList billPlansList = (BillPlansList) getIntent()
                 .getSerializableExtra("billObject");
-        billPlans = billPlansList.getBill();
-        Log.i("BILLSINBILLCLASS", billPlans.toString());
-        initializeTable(billPlans);
+        initialBillPlans = billPlansList.getBill();
+        Log.i("BILLSINBILLCLASS", initialBillPlans.toString());
+
+        BillPlans basicBill = initialBillPlans.get(0);
+
+        List<BillPlans> refinedBillPlans = new ArrayList<BillPlans>();
+
+        for(int i = 3;i<initialBillPlans.size();i++){
+            if(basicBill.getBill()<initialBillPlans.get(i).getBill()){
+                refinedBillPlans.add(0,basicBill);
+                refinedBillPlans.add(1,initialBillPlans.get(1));
+                refinedBillPlans.add(2,initialBillPlans.get(2));
+            }
+            else
+            {
+                refinedBillPlans.add(i,initialBillPlans.get(i));
+            }
+
+        }
+
+
+        initializeTable(refinedBillPlans);
     }
 
     private void initializeTable(final List<BillPlans> billPlans) {
+
 
         TextView t1v, t2v, t3v, t4v;
         TableRow tbrow0 = new TableRow(this);

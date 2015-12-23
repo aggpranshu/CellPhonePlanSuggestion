@@ -1,7 +1,7 @@
 
 package com.lochbridge.cellphoneplan.android;
 
-import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -16,6 +16,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -25,10 +26,18 @@ import android.provider.CallLog;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TableLayout;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.gson.Gson;
 import com.lochbridge.cellphoneplan.spring.AggregatedLogStats;
 import com.lochbridge.cellphoneplan.spring.BillPlansList;
@@ -38,14 +47,12 @@ import com.lochbridge.cellphoneplan.urls.URLClass;
 public class CallLogStats extends Activity {
 
     List<ListPlanDetailsByDuration> listPlanDetailsByDuration;
+    LinearLayout linearLayoutChart;
     CallLogs object;
+    private PieChart mChart;
     private String providerName;
     private Button buttonBill;
-    private TextView totalDayCallsTv;
-    private TextView totalNightCallsTv;
-    private TextView totalCallsTv;
-    private TextView totalSMSCountTv;
-    private HashMap<String, CallLogs> callLogsDataMap = new LinkedHashMap<String, CallLogs>();
+
     private AggregatedLogStats aggregatedLogStats;
     private int smsCount = 0;
     private String[] projectionCall = new String[] {
@@ -63,13 +70,10 @@ public class CallLogStats extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        totalDayCallsTv = (TextView) findViewById(R.id.durationDayTextView);
-        totalNightCallsTv = (TextView) findViewById(R.id.durationNightTextView);
-        totalCallsTv = (TextView) findViewById(R.id.totalCallTextView);
-        totalSMSCountTv = (TextView) findViewById(R.id.totalSMSCountTextView);
+        linearLayoutChart = (LinearLayout) findViewById(R.id.aggregatedDataLayout);
+
         TextView circleNameTv = (TextView) findViewById(R.id.circleNameTextView);
         TextView validityTv = (TextView) findViewById(R.id.providerNameTextView);
-        TableLayout tableLayoutForBill = (TableLayout) findViewById(R.id.tableForBill);
         buttonBill = (Button) findViewById(R.id.billButton);
 
         Date d = (Date) getIntent().getSerializableExtra("date");
@@ -78,8 +82,39 @@ public class CallLogStats extends Activity {
         circleNameTv.setText(((ApplicationClass) getApplication()).getCircleName());
         validityTv.setText(((ApplicationClass) getApplication()).getDays());
 
-        if (whenItHappened.equals("before")) {
+        mChart = new PieChart(this);
+        // add pie chart to main layout
+        linearLayoutChart
+                .addView(mChart, new LinearLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.MATCH_PARENT,
+                        RelativeLayout.LayoutParams.MATCH_PARENT));
 
+        // setContentView(mChart);
+        linearLayoutChart.setBackgroundColor(Color.parseColor("#55656C"));
+        // setContentView(t);
+
+        // configure pie chart
+        mChart.setUsePercentValues(true);
+
+        mChart.setDescription("User log Aggregated Stats");
+
+        // enable hole and configure
+        mChart.setDrawHoleEnabled(true);
+        mChart.setHoleColorTransparent(true);
+        mChart.setHoleRadius(5);
+        mChart.setTransparentCircleRadius(7);
+
+        // enable rotation of the chart by touch
+        mChart.setRotationAngle(0);
+        mChart.setRotationEnabled(true);
+
+        // customize legends
+        Legend l = mChart.getLegend();
+        l.setPosition(Legend.LegendPosition.ABOVE_CHART_RIGHT);
+        l.setXEntrySpace(7);
+        l.setYEntrySpace(5);
+
+        if (whenItHappened.equals("before")) {
             MesgRecords(d);
             CallRecords(d);
             isRoaming();
@@ -113,12 +148,11 @@ public class CallLogStats extends Activity {
             }
 
             curMesg.close();
-
-            totalSMSCountTv.setText(String.valueOf(smsCount));
         }
     }
 
     private void CallRecords(Date d) {
+        HashMap<String, CallLogs> callLogsDataMap = new LinkedHashMap<String, CallLogs>();
         String selection = "type = 2";
         ContentResolver resolver = getApplicationContext().getContentResolver();
         Cursor curCall = resolver.query(CallLog.Calls.CONTENT_URI, projectionCall, selection, null,
@@ -155,11 +189,7 @@ public class CallLogStats extends Activity {
             }
         }
         curCall.close();
-        callServiceForData(callLogsDataMap);
-    }
-
-    private void callServiceForData(HashMap<String, CallLogs> callLogsDataMap) {
-        new BgAsyncTaskForLogAggregation().execute();
+        new BgAsyncTaskForLogAggregation().execute(callLogsDataMap);
     }
 
     private void isRoaming() {
@@ -174,25 +204,25 @@ public class CallLogStats extends Activity {
 
     }
 
-    private class BgAsyncTaskForLogAggregation extends AsyncTask<Void, Void, AggregatedLogStats> {
+    private class BgAsyncTaskForLogAggregation extends
+            AsyncTask<HashMap<String, CallLogs>, Void, AggregatedLogStats> {
 
         String response;
 
         @Override
-        protected AggregatedLogStats doInBackground(Void... params) {
+        protected AggregatedLogStats doInBackground(HashMap... params) {
             try {
-                String jsonMap = new Gson().toJson(callLogsDataMap);
-                Log.i("jsonmap", jsonMap);
 
-                String url = URLClass.baseURL  + URLClass.userDataURL +((ApplicationClass) getApplication()).getProviderName() + "/" +
-                        ((ApplicationClass) getApplication()).getCircleName() + "/" + URLClass.aggregationURL;
-
+                String url = URLClass.baseURL + URLClass.userDataURL
+                        + ((ApplicationClass) getApplication()).getProviderName() + "/" +
+                        ((ApplicationClass) getApplication()).getCircleName() + "/"
+                        + URLClass.aggregationURL;
 
                 RestTemplate restTemplate = new RestTemplate(true);
                 restTemplate.getMessageConverters().add(new StringHttpMessageConverter());
                 restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
                 aggregatedLogStats = restTemplate.postForObject(
-                        url, callLogsDataMap, AggregatedLogStats.class);
+                        url, params[0], AggregatedLogStats.class);
                 return aggregatedLogStats;
             } catch (Exception e) {
                 Log.e("MainActivity", e.getMessage(), e);
@@ -209,6 +239,72 @@ public class CallLogStats extends Activity {
         @Override
         protected void onPostExecute(AggregatedLogStats aggregatedLogStats) {
             super.onPostExecute(aggregatedLogStats);
+
+            Integer[] arrayData = {
+                    aggregatedLogStats.getLddInSeconds(),
+                    aggregatedLogStats.getLdsInSeconds(), aggregatedLogStats.getLnsInSeconds(),
+                    aggregatedLogStats.getLndInSeconds(), aggregatedLogStats.getSdsInSeconds(),
+                    aggregatedLogStats.getSddInSeconds(), aggregatedLogStats.getSnsInSeconds(),
+                    aggregatedLogStats.getSndInSeconds()
+            };
+
+            String[] descriptionArray = {"Local Day Different Network","Local Day Same Network",
+                    "Local Day Same Network","Local Night Different Network",
+                    "STD Day Same Network","STD Day Different Network","STD Night Same Network",
+                    "STD Night Different Network"};
+
+            ArrayList<Entry> yVals1 = new ArrayList<Entry>();
+
+            for (int i = 0; i < arrayData.length; i++)
+                yVals1.add(new Entry(arrayData[i], i));
+
+            ArrayList<String> xVals = new ArrayList<String>();
+
+            for (int i = 0; i < descriptionArray.length; i++)
+                xVals.add(descriptionArray[i]);
+
+            // create pie data set
+            PieDataSet dataSet = new PieDataSet(yVals1, "Market Share");
+            dataSet.setSliceSpace(3);
+            dataSet.setSelectionShift(5);
+
+            // add many colors
+            ArrayList<Integer> colors = new ArrayList<Integer>();
+
+            for (int c : ColorTemplate.VORDIPLOM_COLORS)
+                colors.add(c);
+
+            for (int c : ColorTemplate.JOYFUL_COLORS)
+                colors.add(c);
+
+            for (int c : ColorTemplate.COLORFUL_COLORS)
+                colors.add(c);
+
+            for (int c : ColorTemplate.LIBERTY_COLORS)
+                colors.add(c);
+
+            for (int c : ColorTemplate.PASTEL_COLORS)
+                colors.add(c);
+
+            colors.add(ColorTemplate.getHoloBlue());
+            dataSet.setColors(colors);
+
+            // instantiate pie data object now
+            PieData data = new PieData(xVals, dataSet);
+            data.setValueFormatter(new PercentFormatter());
+            data.setValueTextSize(11f);
+            data.setValueTextColor(Color.GRAY);
+
+            mChart.setDrawSliceText(false);
+
+            mChart.setData(data);
+
+            // undo all highlights
+            mChart.highlightValues(null);
+
+            // update pie chart
+            mChart.invalidate();
+
             /*
              * totalDayCallsTv.setText(String.valueOf(aggregatedLogStats
              * .getTotalCallDuringDayInSeconds()) + " sec");
@@ -265,7 +361,6 @@ public class CallLogStats extends Activity {
 
             Intent i = new Intent(CallLogStats.this, BillList.class);
             i.putExtra("billObject", billPlansList);
-
             startActivity(i);
 
         }
