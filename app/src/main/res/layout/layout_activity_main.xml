@@ -100,9 +100,10 @@
         android:gravity="center">
 
         <com.guna.libmultispinner.MultiSelectionSpinner
-            android:id="@+id/mySpinner"
+            android:id="@+id/spinnerMultiSelect"
             android:layout_width="match_parent"
-            android:layout_height="50dp" />
+            android:layout_height="50dp"
+            android:spinnerMode="dialog"/>
 
     </TableRow>
 

@@ -10,7 +10,7 @@ import com.lochbridge.cellphoneplan.android.ApplicationClass;
  */
 public class URLClass extends Activity {
 
-    public static String baseURL = "http://192.168.1.147:8080/SpringHibernate/";
+    public static String baseURL = "http://192.168.1.149:8080/SpringHibernate/";
     public static String userDataURL = "user/data/";
     public static String aggregationURL = "logaggregation";
     public static String dataproviderURL = "telecomdata/";

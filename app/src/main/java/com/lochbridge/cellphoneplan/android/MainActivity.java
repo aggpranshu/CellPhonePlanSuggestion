@@ -9,14 +9,18 @@ import org.json.JSONObject;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -29,21 +33,22 @@ import com.facebook.CallbackManager;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.login.widget.LoginButton;
-import com.google.gson.Gson;
 import com.guna.libmultispinner.MultiSelectionSpinner;
 import com.lochbridge.cellphoneplan.spring.CircleList;
 import com.lochbridge.cellphoneplan.spring.Circles;
-import com.lochbridge.cellphoneplan.spring.ListPlanDetailsByDuration;
-import com.lochbridge.cellphoneplan.spring.ListPlanDetailsByDurationList;
+import com.lochbridge.cellphoneplan.spring.PlanDetails;
+import com.lochbridge.cellphoneplan.spring.PlanDetailsList;
 import com.lochbridge.cellphoneplan.urls.URLClass;
 
 public class MainActivity extends AppCompatActivity {
 
+    ProgressDialog dialog;
+    private View mLayout;
+    CardView providerCV, circleCV, dataPlanCV, dateCV;
     Button buttonCircle, buttonDate, buttonDuration, buttonData;
-    private TextView carrierName;
-    private List<ListPlanDetailsByDuration> listPlanDetailsByDuration;
-    private Spinner spinnerDuration, spinnerCircleList , spinnerData;
-    private List<String> validityOfPlans = new ArrayList<String>();
+    private TextView carrierName, circleName, dataUsage;
+    private List<PlanDetails> listPlanDetails;
+    private Spinner spinnerProvider, spinnerCircle, spinnerData;
     private List<String> listDataRange = new ArrayList<String>();
     private LoginButton loginButton;
     private CallbackManager callbackManager;
@@ -59,25 +64,28 @@ public class MainActivity extends AppCompatActivity {
          */
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_activity_main);
+        setContentView(R.layout.layout_details);
 
-        buttonDate = (Button) findViewById(R.id.buttonDate);
-        buttonData = (Button) findViewById(R.id.buttonData);
-        buttonCircle = (Button) findViewById(R.id.buttonCircle);
-        buttonDuration = (Button) findViewById(R.id.buttonDuration);
+        mLayout = findViewById(R.id.relativeLayout);
 
-        spinnerCircleList = (Spinner) findViewById(R.id.listCircles);
-        spinnerDuration = (Spinner) findViewById(R.id.listDuration);
-        multiSelectionSpinner = (MultiSelectionSpinner) findViewById(R.id.mySpinner);
-        spinnerData =(Spinner)findViewById(R.id.spinnerData);
+        // declaration of the card view
+        providerCV = (CardView) findViewById(R.id.cvProvider);
+        circleCV = (CardView) findViewById(R.id.cvCircle);
+        dataPlanCV = (CardView) findViewById(R.id.cvData);
+        dateCV = (CardView) findViewById(R.id.cvDate);
 
-        carrierName = (TextView) findViewById(R.id.carrierName);
-        carrierName.append(": " + ((ApplicationClass) getApplication()).getProviderName());
+        // declaration of the spinners
+        spinnerCircle = (Spinner) findViewById(R.id.spinnerCircle);
+        spinnerProvider = (Spinner) findViewById(R.id.spinnerProvider);
+        multiSelectionSpinner = (MultiSelectionSpinner) findViewById(R.id.spinnerMultiSelect);
+        spinnerData = (Spinner) findViewById(R.id.spinnerData);
 
-        validityOfPlans.add("Days for plans");
-        validityOfPlans.add("28 days");
-        validityOfPlans.add("60 days");
-        validityOfPlans.add("90 days");
+        // declaration for the textviews
+        carrierName = (TextView) findViewById(R.id.tvProvider);
+        circleName = (TextView) findViewById(R.id.tvCircle);
+        dataUsage = (TextView) findViewById(R.id.tvData);
+
+        // carrierName.append(": " + ((ApplicationClass) getApplication()).getProviderName());
 
         listDataRange.add("Select your Data Usage");
         listDataRange.add("0 - 100 MB");
@@ -88,48 +96,51 @@ public class MainActivity extends AppCompatActivity {
         listDataRange.add("3GB - 5GB");
         listDataRange.add("Above 5GB");
 
-        buttonDate.setVisibility(View.INVISIBLE);
-        buttonData.setVisibility(View.INVISIBLE);
-        buttonDuration.setVisibility(View.INVISIBLE);
+        ArrayList<String> providerList = getIntent().getStringArrayListExtra("ListProviders");
 
-        CircleList circleListObj = (CircleList) getIntent().getSerializableExtra("classInfo");
-        try {
-
-            List<Circles> circleList = circleListObj.getListCircles();
-            circleListNames = new ArrayList<String>();
-            circleListNames.add("List of Circles");
-            for (int k = 0; k < circleList.size(); k++) {
-                circleListNames.add(circleList.get(k).getCircleName());
-            }
-
-        } catch (NullPointerException e) {
-            Toast.makeText(getApplicationContext(), "exception caught", Toast.LENGTH_SHORT).show();
-        }
-
-        buttonCircle.setOnClickListener(new View.OnClickListener() {
+        providerCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                spinnerCircleList.performClick();
+                if(spinnerProvider.getCount()==0){
+                    final Snackbar snackbar = Snackbar
+                            .make(mLayout, "Select Provider First", Snackbar.LENGTH_LONG);
+                    snackbar.show();
+                }
+                else {
+                    spinnerProvider.performClick();
+                }
             }
         });
 
-        buttonDuration.setOnClickListener(new View.OnClickListener() {
+        circleCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                spinnerDuration.performClick();
-
+                if(spinnerCircle.getCount()==0){
+                    final Snackbar snackbar = Snackbar
+                            .make(mLayout, "Select Provider First", Snackbar.LENGTH_LONG);
+                    snackbar.show();
+                }
+                else {
+                    spinnerCircle.performClick();
+                }
             }
         });
 
-        buttonData.setOnClickListener(new View.OnClickListener() {
+        dataPlanCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                spinnerData.performClick();
-
+                if(spinnerData.getCount()==0){
+                    final Snackbar snackbar = Snackbar
+                            .make(mLayout, "Select Circle First", Snackbar.LENGTH_LONG);
+                    snackbar.show();
+                }
+                else {
+                    spinnerData.performClick();
+                }
             }
         });
 
-        buttonDate.setOnClickListener(new View.OnClickListener() {
+        dateCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -152,60 +163,50 @@ public class MainActivity extends AppCompatActivity {
          * //info.setText("Login attempt failed."); } });
          */
 
+        spinnerProvider.setOnItemSelectedListener(new OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String item = parent.getItemAtPosition(position).toString();
 
+                if (item.equals("List of Providers")) {
+                    Toast.makeText(getApplicationContext(), String.valueOf(position),
+                            Toast.LENGTH_SHORT).show();
+                    // spinnerDuration.setVisibility(View.VISIBLE);
+                    // spinnerDuration.setVisibility(View.INVISIBLE);
+                } else {
+                    carrierName.setText(item);
+                    dialog = new ProgressDialog(MainActivity.this);
+                    dialog.setMessage("Loading data...");
+                    dialog.show();
+                    new BGAsyncTaskCircle().execute(item);
+
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+
+        });
+
+        ArrayAdapter<String> dataAdapterProviderList = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, providerList);
+        dataAdapterProviderList
+                .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerProvider.setAdapter(dataAdapterProviderList);
         /*
          * Spinner for specifying the name of the circles for the current Carrier of the user. This
          * is being populated by the circleListNames - ArrayList
          */
-        spinnerCircleList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinnerCircle.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String item = parent.getItemAtPosition(position).toString();
 
                 if (item.equals("List of Circles")) {
-                    Toast.makeText(getApplicationContext(), String.valueOf(position) , Toast.LENGTH_SHORT).show();
-                    // spinnerDuration.setVisibility(View.VISIBLE);
-                    // spinnerDuration.setVisibility(View.INVISIBLE);
                 } else {
-                    ArrayAdapter<String> dataAdapterDurationList = new ArrayAdapter<String>(
-                            getApplicationContext(), android.R.layout.simple_spinner_item,
-                            validityOfPlans);
-                    dataAdapterDurationList
-                            .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spinnerDuration.setAdapter(dataAdapterDurationList);
-                    ((ApplicationClass) getApplication()).setCircleName(item);
-                    buttonDuration.setVisibility(View.VISIBLE);
-                }
 
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        ArrayAdapter<String> dataAdapterCircleList = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, circleListNames);
-        dataAdapterCircleList
-                .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerCircleList.setAdapter(dataAdapterCircleList);
-
-
-        spinnerDuration.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String item = parent.getItemAtPosition(position).toString();
-                if (item.equals("Days for plans")) {
-
-                } else {
-                    ((ApplicationClass) getApplication()).setDays(item);
-                    ArrayAdapter<String> dataAdapterCircleList = new ArrayAdapter<String>(getApplicationContext(),
-                            android.R.layout.simple_spinner_item, listDataRange);
-                    dataAdapterCircleList
-                            .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spinnerData.setAdapter(dataAdapterCircleList);
-                    buttonData.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -215,16 +216,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        spinnerData.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinnerData.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String item = parent.getItemAtPosition(position).toString();
                 if (item.equals("Select your Data Usage")) {
 
                 } else {
-                    ((ApplicationClass)getApplication()).setDataUsage(item);
-                    buttonDate.setVisibility(View.VISIBLE);
-                    new BgAsyncTaskForPlanByDuration().execute();
+                    ((ApplicationClass) getApplication()).setDataUsage(item);
+                    dateCV.setVisibility(View.VISIBLE);
+                    new BGAsyncTaskForPlans().execute();
                 }
             }
 
@@ -250,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
         AccessTokenTracker mTokenTracker = new AccessTokenTracker() {
             @Override
             protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken,
-                                                       AccessToken currentAccessToken) {
+                    AccessToken currentAccessToken) {
 
             }
         };
@@ -281,23 +282,22 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private class BgAsyncTaskForPlanByDuration extends
-            AsyncTask<Void, Void, ListPlanDetailsByDurationList> {
+    private class BGAsyncTaskForPlans extends
+            AsyncTask<Void, Void, PlanDetailsList> {
 
         String response;
 
         @Override
-        protected ListPlanDetailsByDurationList doInBackground(Void... params) {
+        protected PlanDetailsList doInBackground(Void... params) {
             try {
 
                 String url = URLClass.baseURL + URLClass.dataproviderURL
                         + ((ApplicationClass) getApplication()).getProviderName() + "/" +
-                        ((ApplicationClass) getApplication()).getCircleName() + "/"
-                        + ((ApplicationClass) getApplication()).getDays();
+                        ((ApplicationClass) getApplication()).getCircleName();
                 RestTemplate restTemplate = new RestTemplate(true);
                 restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
                 return restTemplate
-                        .getForObject(url, ListPlanDetailsByDurationList.class);
+                        .getForObject(url, PlanDetailsList.class);
             } catch (Exception e) {
                 Log.e("MainActivity", e.getMessage(), e);
             }
@@ -311,14 +311,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(ListPlanDetailsByDurationList listPlanDetailsByDurationList) {
-            super.onPostExecute(listPlanDetailsByDurationList);
-            listPlanDetailsByDuration = listPlanDetailsByDurationList
-                    .getListPlanDetailsByDuration();
+        protected void onPostExecute(PlanDetailsList planDetailsList) {
+            super.onPostExecute(planDetailsList);
+            listPlanDetails = planDetailsList.getListPlanDetails();
             ArrayList<String> listPlans = new ArrayList<String>();
-            for (int i = 0; i < listPlanDetailsByDuration.size(); i++) {
+            for (int i = 0; i < listPlanDetails.size(); i++) {
                 try {
-                    JSONObject jsonObject = new JSONObject(listPlanDetailsByDuration.get(i)
+                    JSONObject jsonObject = new JSONObject(listPlanDetails.get(i)
                             .getPlanDetails());
                     listPlans.add(
                             i,
@@ -332,7 +331,67 @@ public class MainActivity extends AppCompatActivity {
 
             String[] array = listPlans.toArray(new String[listPlans.size()]);
             multiSelectionSpinner.setItems(array);
-             }
+        }
     }
 
+    private class BGAsyncTaskCircle extends AsyncTask<String, Void, CircleList> {
+
+        @Override
+        protected CircleList doInBackground(String... params) {
+            try {
+                String url = URLClass.baseURL + URLClass.dataproviderURL + params[0];
+                ((ApplicationClass) getApplication()).setProviderName(params[0]);
+
+                RestTemplate restTemplate = new RestTemplate();
+                restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+                return restTemplate.getForObject(url, CircleList.class);
+            } catch (Exception e) {
+                Log.e("MainActivity", e.getMessage(), e);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(CircleList circleList) {
+
+            try {
+                dialog.dismiss();
+                super.onPostExecute(circleList);
+                List<Circles> listCircles = circleList.getListCircles();
+                circleListNames = new ArrayList<String>();
+                circleListNames.add("List of Providers");
+                for (int k = 0; k < listCircles.size(); k++) {
+                    circleListNames.add(listCircles.get(k).getCircleName());
+                }
+
+                ArrayAdapter<String> dataAdapterCircleList = new ArrayAdapter<String>(
+                        getApplicationContext(),
+                        android.R.layout.simple_spinner_item, circleListNames);
+                dataAdapterCircleList
+                        .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinnerCircle.setAdapter(dataAdapterCircleList);
+
+                ArrayAdapter<String> dataAdapterDataPlans = new ArrayAdapter<String>(
+                        getApplicationContext(),
+                        android.R.layout.simple_spinner_item, listDataRange);
+                dataAdapterDataPlans
+                        .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinnerData.setAdapter(dataAdapterDataPlans);
+
+            } catch (NullPointerException e) {
+                Toast.makeText(getApplicationContext(), "Please Connect to internet",
+                        Toast.LENGTH_SHORT).show();
+                /*
+                 * Intent i = new Intent(SplashScreen.this, MainActivity.class);
+                 * i.putExtra("isEmpty",0);
+                 */
+            }
+        }
+    }
 }

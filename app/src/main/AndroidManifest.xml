@@ -19,7 +19,7 @@
             android:value="@string/facebookID" />
 
         <activity
-            android:name=".SplashScreen"
+            android:name=".SplashScreen1"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

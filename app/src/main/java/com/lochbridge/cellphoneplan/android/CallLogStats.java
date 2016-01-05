@@ -1,28 +1,27 @@
-
 package com.lochbridge.cellphoneplan.android;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.CallLog;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -41,34 +40,38 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.gson.Gson;
 import com.lochbridge.cellphoneplan.spring.AggregatedLogStats;
 import com.lochbridge.cellphoneplan.spring.BillPlansList;
-import com.lochbridge.cellphoneplan.spring.ListPlanDetailsByDuration;
 import com.lochbridge.cellphoneplan.urls.URLClass;
 
 public class CallLogStats extends Activity {
 
-    List<ListPlanDetailsByDuration> listPlanDetailsByDuration;
+    private static final int PERMISSION_REQUEST_CALLLOGS = 0;
+    private static final int PERMISSION_REQUEST_MESSAGES = 1;
+
     LinearLayout linearLayoutChart;
     CallLogs object;
     private PieChart mChart;
     private String providerName;
     private Button buttonBill;
+    private View mLayout;
+    Date d;
 
     private AggregatedLogStats aggregatedLogStats;
     private int smsCount = 0;
-    private String[] projectionCall = new String[] {
+    private String[] projectionCall = new String[]{
             CallLog.Calls.DATE,
             CallLog.Calls.NUMBER,
             CallLog.Calls.DURATION,
             CallLog.Calls.TYPE
     };
 
-    private String[] projectionMesg = new String[] {
+    private String[] projectionMesg = new String[]{
             "type", "date"
     };
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mLayout = findViewById(R.id.relativeLayout1);
 
         linearLayoutChart = (LinearLayout) findViewById(R.id.aggregatedDataLayout);
 
@@ -76,7 +79,7 @@ public class CallLogStats extends Activity {
         TextView validityTv = (TextView) findViewById(R.id.providerNameTextView);
         buttonBill = (Button) findViewById(R.id.billButton);
 
-        Date d = (Date) getIntent().getSerializableExtra("date");
+        d = (Date) getIntent().getSerializableExtra("date");
         String whenItHappened = getIntent().getStringExtra("whenItHappened");
 
         circleNameTv.setText(((ApplicationClass) getApplication()).getCircleName());
@@ -117,7 +120,6 @@ public class CallLogStats extends Activity {
         if (whenItHappened.equals("before")) {
             MesgRecords(d);
             CallRecords(d);
-            isRoaming();
 
             // Toast.makeText(getApplicationContext(), ((ApplicationClass)
             // getApplication()).getDays(), Toast.LENGTH_SHORT).show();
@@ -134,74 +136,128 @@ public class CallLogStats extends Activity {
     }
 
     private void MesgRecords(Date d) {
-        Uri uri = Uri.parse("content://sms");
-        Cursor curMesg = getContentResolver().query(uri, projectionMesg, "type=2", null, null);
 
-        if (curMesg.moveToFirst()) {
-            for (int i = 0; i < curMesg.getCount(); i++) {
-                String date = curMesg.getString(curMesg.getColumnIndexOrThrow("date"));
-                Date smsDayTime = new Date(Long.valueOf(date));
-                if (smsDayTime.compareTo(d) > 0) {
-                    smsCount++;
+        if (ActivityCompat.checkSelfPermission(this,Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissionsCallLogs();
+        }
+
+        else {
+            Uri uri = Uri.parse("content://sms");
+            Cursor curMesg = getContentResolver().query(uri, projectionMesg, "type=2", null, null);
+
+            if (curMesg.moveToFirst()) {
+                for (int i = 0; i < curMesg.getCount(); i++) {
+                    String date = curMesg.getString(curMesg.getColumnIndexOrThrow("date"));
+                    Date smsDayTime = new Date(Long.valueOf(date));
+                    if (smsDayTime.compareTo(d) > 0) {
+                        smsCount++;
+                    }
+                    curMesg.moveToNext();
                 }
-                curMesg.moveToNext();
-            }
 
-            curMesg.close();
+                curMesg.close();
+            }
         }
     }
+
 
     private void CallRecords(Date d) {
         HashMap<String, CallLogs> callLogsDataMap = new LinkedHashMap<String, CallLogs>();
         String selection = "type = 2";
         ContentResolver resolver = getApplicationContext().getContentResolver();
-        Cursor curCall = resolver.query(CallLog.Calls.CONTENT_URI, projectionCall, selection, null,
-                null);
 
-        while (curCall.moveToNext()) {
-            String truncatedNumber;
-            String number = curCall.getString(curCall.getColumnIndex(CallLog.Calls.NUMBER));
-            String duration = curCall.getString(curCall.getColumnIndex(CallLog.Calls.DURATION));
-
-            String date = curCall.getString(curCall.getColumnIndex(CallLog.Calls.DATE));
-            Date callDate = new Date(Long.valueOf(date));
-
-            Log.i("DATE", d.toString());
-
-            if (callDate.compareTo(d) > 0 && Integer.valueOf(duration) > 0) {
-                Log.i("duration", number + "    " + Long.valueOf(duration).toString());
-                if (number.length() > 10) {
-                    truncatedNumber = "91"
-                            + number.substring((Math.abs(10 - number.length())), number.length());
-                } else
-                    truncatedNumber = number;
-
-                if (callLogsDataMap.containsKey(truncatedNumber)) {
-                    object = callLogsDataMap.get(truncatedNumber);
-                    object.setDuration(Integer.valueOf(duration), callDate);
-
-                } else {
-                    object = new CallLogs(truncatedNumber);
-                    object.setDuration(Integer.valueOf(duration), callDate);
-                    object.setSmsCount(smsCount);
-                }
-                callLogsDataMap.put(truncatedNumber, object);
-            }
+        if (ActivityCompat.checkSelfPermission(this,Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissionsMesgs();
         }
-        curCall.close();
+        else {
+            Cursor curCall = resolver.query(CallLog.Calls.CONTENT_URI, projectionCall, selection, null,
+                    null);
+
+            while (curCall.moveToNext()) {
+                String truncatedNumber;
+                String number = curCall.getString(curCall.getColumnIndex(CallLog.Calls.NUMBER));
+                String duration = curCall.getString(curCall.getColumnIndex(CallLog.Calls.DURATION));
+
+                String date = curCall.getString(curCall.getColumnIndex(CallLog.Calls.DATE));
+                Date callDate = new Date(Long.valueOf(date));
+
+                Log.i("DATE", d.toString());
+
+                if (callDate.compareTo(d) > 0 && Integer.valueOf(duration) > 0) {
+                    Log.i("duration", number + "    " + Long.valueOf(duration).toString());
+                    if (number.length() > 10) {
+                        truncatedNumber = "91"
+                                + number.substring((Math.abs(10 - number.length())), number.length());
+                    } else
+                        truncatedNumber = number;
+
+                    if (callLogsDataMap.containsKey(truncatedNumber)) {
+                        object = callLogsDataMap.get(truncatedNumber);
+                        object.setDuration(Integer.valueOf(duration), callDate);
+
+                    } else {
+                        object = new CallLogs(truncatedNumber);
+                        object.setDuration(Integer.valueOf(duration), callDate);
+                        object.setSmsCount(smsCount);
+                    }
+                    callLogsDataMap.put(truncatedNumber, object);
+                }
+            }
+
+            curCall.close();
+        }
+
         new BgAsyncTaskForLogAggregation().execute(callLogsDataMap);
     }
 
-    private void isRoaming() {
+    private void requestPermissionsMesgs() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.READ_SMS)) {
+            Snackbar.make(mLayout, "Access to SMS is required to gather SMS data.",
+                    Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // Request the permission
+                    ActivityCompat.requestPermissions(CallLogStats.this,
+                            new String[]{Manifest.permission.READ_SMS},
+                            PERMISSION_REQUEST_MESSAGES);
+                }
+            }).show();
 
-        NetworkInfo info = (NetworkInfo) ((ConnectivityManager) getApplicationContext()
-                .getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
-        if (info.isRoaming()) {
-            Toast.makeText(getApplicationContext(), "roaming", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(getApplicationContext(), "Not roaming", Toast.LENGTH_SHORT).show();
-        }
 
+            Snackbar.make(mLayout,
+                    "Permission is not available. Requesting SMS permission.",
+                    Snackbar.LENGTH_SHORT).show();
+            // Request the permission. The result will be received in onRequestPermissionResult().
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_SMS},
+                    PERMISSION_REQUEST_MESSAGES);
+        }
+    }
+
+    private void requestPermissionsCallLogs() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.READ_CALL_LOG)) {
+            Snackbar.make(mLayout, "Access to call logs is required to gather call data.",
+                    Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // Request the permission
+                    ActivityCompat.requestPermissions(CallLogStats.this,
+                            new String[]{Manifest.permission.READ_CALL_LOG},
+                            PERMISSION_REQUEST_CALLLOGS);
+                }
+            }).show();
+
+        } else {
+
+            Snackbar.make(mLayout,
+                    "Permission is not available. Requesting call logs permission.",
+                    Snackbar.LENGTH_SHORT).show();
+            // Request the permission. The result will be received in onRequestPermissionResult().
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALL_LOG},
+                    PERMISSION_REQUEST_CALLLOGS);
+        }
     }
 
     private class BgAsyncTaskForLogAggregation extends
@@ -364,6 +420,44 @@ public class CallLogStats extends Activity {
             startActivity(i);
 
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                           int[] grantResults) {
+
+        if (requestCode == PERMISSION_REQUEST_CALLLOGS) {
+            // Request for call logs.
+            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission has been granted. Start camera preview Activity.
+                Snackbar.make(mLayout, "Call Logs permission was granted. Starting preview.",
+                        Snackbar.LENGTH_SHORT)
+                        .show();
+                CallRecords(d);
+            } else {
+                // Permission request was denied.
+                Snackbar.make(mLayout, "Call Logs permission request was denied.",
+                        Snackbar.LENGTH_SHORT)
+                        .show();
+            }
+        }
+
+        if (requestCode == PERMISSION_REQUEST_MESSAGES) {
+            // Request for call logs.
+            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission has been granted. Start camera preview Activity.
+                Snackbar.make(mLayout, "SMS permission was granted. Starting preview.",
+                        Snackbar.LENGTH_SHORT)
+                        .show();
+               MesgRecords(d);
+            } else {
+                // Permission request was denied.
+                Snackbar.make(mLayout, "SMS permission request was denied.",
+                        Snackbar.LENGTH_SHORT)
+                        .show();
+            }
+        }
+
     }
 
 }
