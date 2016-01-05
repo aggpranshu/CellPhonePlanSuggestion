@@ -133,7 +133,10 @@ public class CallLogStats extends Activity {
 
             Log.i("DATE", d.toString());
 
+
+
             if (callDate.compareTo(d) > 0 && Integer.valueOf(duration) > 0) {
+                Log.i("rajat", String.valueOf(Math.ceil(Double.valueOf(duration) / 60.0)));
                 Log.i("duration", number + "    " + Long.valueOf(duration).toString());
                 if (number.length() > 10) {
                     truncatedNumber = "91"
