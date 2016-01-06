@@ -109,7 +109,7 @@ public class SplashScreen extends AppCompatActivity {
         @Override
         protected ProviderList doInBackground(Void... params) {
             try {
-                String url = URLClass.baseURL + URLClass.dataproviderURL + "/providers";
+                String url = URLClass.baseURL + URLClass.dataproviderURL + "providers";
                 RestTemplate restTemplate = new RestTemplate();
                 restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
                 return restTemplate.getForObject(url, ProviderList.class);

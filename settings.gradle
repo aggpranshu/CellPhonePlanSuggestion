@@ -1,1 +1,1 @@
-include ':app', ':libmultispinner'
+include ':app', ':libmultispinner', ':MPChartLib'

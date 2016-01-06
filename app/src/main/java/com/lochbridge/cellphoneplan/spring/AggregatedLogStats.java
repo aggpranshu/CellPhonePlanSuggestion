@@ -1,73 +1,116 @@
+
 package com.lochbridge.cellphoneplan.spring;
 
 import java.io.Serializable;
 
-public class AggregatedLogStats implements Serializable{
+public class AggregatedLogStats implements Serializable {
+    private int ldsInSeconds;
 
-    private int totalCallDuringDayInSeconds;
+    private int lddInSeconds;
 
-    private double totalCallDuringDayInMinutes;
+    private int lnsInSeconds;
 
-    private int totalCallDuringNightInSeconds;
+    private int lndInSeconds;
 
-    private double totalCallDuringNightInMinutes;
+    private int sdsInSeconds;
 
-    private int totalCalls;
+    private int sddInSeconds;
+
+    private int snsInSeconds;
+
+    private int sndInSeconds;
 
     private int smsCount;
 
+    private int totalCallDurationInSeconds;
+
+    private int totalCalls;
+
+    public int getLdsInSeconds() {
+        return ldsInSeconds;
+    }
+
+    public void setLdsInSeconds(int ldsInSeconds) {
+        this.ldsInSeconds = ldsInSeconds;
+    }
+
+    public int getLddInSeconds() {
+        return lddInSeconds;
+    }
+
+    public void setLddInSeconds(int lddInSeconds) {
+        this.lddInSeconds = lddInSeconds;
+    }
+
+    public int getLnsInSeconds() {
+        return lnsInSeconds;
+    }
+
+    public void setLnsInSeconds(int lnsInSeconds) {
+        this.lnsInSeconds = lnsInSeconds;
+    }
+
+    public int getLndInSeconds() {
+        return lndInSeconds;
+    }
+
+    public void setLndInSeconds(int lndInSeconds) {
+        this.lndInSeconds = lndInSeconds;
+    }
+
+    public int getSdsInSeconds() {
+        return sdsInSeconds;
+    }
+
+    public void setSdsInSeconds(int sdsInSeconds) {
+        this.sdsInSeconds = sdsInSeconds;
+    }
+
+    public int getSddInSeconds() {
+        return sddInSeconds;
+    }
+
+    public void setSddInSeconds(int sddInSeconds) {
+        this.sddInSeconds = sddInSeconds;
+    }
+
+    public int getSnsInSeconds() {
+        return snsInSeconds;
+    }
+
+    public void setSnsInSeconds(int snsInSeconds) {
+        this.snsInSeconds = snsInSeconds;
+    }
+
+    public int getSndInSeconds() {
+        return sndInSeconds;
+    }
+
+    public void setSndInSeconds(int sndInSeconds) {
+        this.sndInSeconds = sndInSeconds;
+    }
+
     public int getSmsCount() {
         return smsCount;
+    }
+
+    public void setSmsCount(int smsCount) {
+        this.smsCount = smsCount;
+    }
+
+    public int getTotalCallDurationInSeconds() {
+        return totalCallDurationInSeconds;
+    }
+
+    public void setTotalCallDurationInSeconds(int totalCallDurationInSeconds) {
+        this.totalCallDurationInSeconds = totalCallDurationInSeconds;
     }
 
     public int getTotalCalls() {
         return totalCalls;
     }
 
-
-
-    public int getTotalCallDuringDayInSeconds() {
-
-        return totalCallDuringDayInSeconds;
+    public void setTotalCalls(int totalCalls) {
+        this.totalCalls = totalCalls;
     }
-
-    public void setTotalCallDuringDayInSeconds(
-            int totalCallDuringDayInSeconds) {
-
-        this.totalCallDuringDayInSeconds = totalCallDuringDayInSeconds;
-    }
-
-    public double getTotalCallDuringDayInMinutes() {
-
-        return totalCallDuringDayInMinutes;
-    }
-
-    public void setTotalCallDuringDayInMinutes(
-            double totalCallDuringDayInMinutes) {
-
-        this.totalCallDuringDayInMinutes = totalCallDuringDayInMinutes;
-    }
-
-    public int getTotalCallDuringNightInSeconds() {
-
-        return totalCallDuringNightInSeconds;
-    }
-
-    public void setTotalCallDuringNightInSeconds(
-            int totalCallDuringNightInSeconds) {
-
-        this.totalCallDuringNightInSeconds = totalCallDuringNightInSeconds;
-    }
-
-    public double getTotalCallDuringNightInMinutes() {
-
-        return totalCallDuringNightInMinutes;
-    }
-
-    public void setTotalCallDuringNightInMinutes(
-            double totalCallDuringNightInMinutes) {
-
-        this.totalCallDuringNightInMinutes = totalCallDuringNightInMinutes;
-    }
-
 }

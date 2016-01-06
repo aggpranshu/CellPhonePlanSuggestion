@@ -1,3 +1,4 @@
+
 package com.lochbridge.cellphoneplan.android;
 
 import java.io.Serializable;
@@ -12,30 +13,24 @@ class CallLogs implements Serializable {
     private Long number;
     private int durationDay;
     private int durationNight;
-    private Date date;
-    private String callType;
-    private int durationMoreThan30;
-    private int durationLessThan30;
-    private int duration;
     private int totalCalls;
-    private String providerName;
     private int smsCount;
+    private int durationInSeconds;
 
-    public int getSmsCount() {
-        return smsCount;
+    public int getDurationInSeconds() {
+        return durationInSeconds;
+    }
+
+    public void setDurationInSeconds(int durationInSeconds) {
+        this.durationInSeconds = durationInSeconds;
+    }
+
+    CallLogs(String number) {
+        this.number = Long.valueOf(number);
     }
 
     public void setSmsCount(int smsCount) {
         this.smsCount = smsCount;
-    }
-
-    CallLogs(){}
-
-    CallLogs(String number, String duration, Date date, String providerName) {
-        this.number = Long.valueOf(number);
-        this.date = date;
-        this.providerName = "Vodafone";
-        this.callType = "local";
     }
 
     public int getTotalCalls() {
@@ -44,22 +39,6 @@ class CallLogs implements Serializable {
 
     public void setTotalCalls(int totalCalls) {
         this.totalCalls = totalCalls;
-    }
-
-    public int getDurationMoreThan30() {
-        return durationMoreThan30;
-    }
-
-    public void setDurationMoreThan30(int durationMoreThan30) {
-        this.durationMoreThan30 = durationMoreThan30;
-    }
-
-    public int getDurationLessThan30() {
-        return durationLessThan30;
-    }
-
-    public void setDurationLessThan30(int dutrationLessThan30) {
-        this.durationLessThan30 = dutrationLessThan30;
     }
 
     public int getDurationDay() {
@@ -86,30 +65,12 @@ class CallLogs implements Serializable {
         this.number = number;
     }
 
-    public String getCallType() {
-        return callType;
-    }
-
-    public void setCallType(String callType) {
-        this.callType = callType;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
     public void setDuration(int duration, Date d) {
 
-        if (duration > 30) {
-            durationMoreThan30 += duration;
-        } else if (duration < 30) {
-            durationLessThan30 += duration;
-        }
-        this.totalCalls += Math.ceil(Double.valueOf(duration)/60.0);
+        durationInSeconds += duration;
+
+        this.totalCalls += Math.ceil(Double.valueOf(duration) / 60.0);
+
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
 
         Date startTime = null;
@@ -127,14 +88,6 @@ class CallLogs implements Serializable {
             durationNight += duration;
         } else
             durationDay += duration;
-    }
-
-    public String getProviderName() {
-        return providerName;
-    }
-
-    public void setProviderName(String providerName) {
-        this.providerName = providerName;
     }
 
 }
