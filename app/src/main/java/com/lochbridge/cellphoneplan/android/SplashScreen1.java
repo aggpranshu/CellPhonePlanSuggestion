@@ -28,6 +28,7 @@ import java.util.List;
 public class SplashScreen1 extends AwesomeSplash {
 
     ArrayList<String> providerListNames;
+    ProviderList providerList;
 
     @Override
     public void initSplash(ConfigSplash configSplash) {
@@ -55,20 +56,26 @@ public class SplashScreen1 extends AwesomeSplash {
         configSplash.setAnimTitleTechnique(Techniques.SlideInUp);
       //  configSplash.setTitleFont("fonts/myfont.ttf"); //provide string to your font located in assets/fonts/
 
-        new BackgroundSplashTaskForProviders().execute();
+        new AsyncTaskProviders().execute();
 
     }
 
     @Override
     public void animationsFinished() {
 
-        Intent i = new Intent(SplashScreen1.this,MainActivity.class);
-        i.putStringArrayListExtra("ListProviders", providerListNames);
-        startActivity(i);
-        finish();
+
+        if(providerList != null) {
+            Intent i = new Intent(SplashScreen1.this, MainActivity.class);
+            i.putStringArrayListExtra("ListProviders", providerListNames);
+            startActivity(i);
+            finish();
+        }
+        else{
+            Toast.makeText(SplashScreen1.this, "OOPS! Something went wrong...", Toast.LENGTH_SHORT).show();
+        }
     }
 
-    private class BackgroundSplashTaskForProviders extends AsyncTask<Void, Void, ProviderList> {
+    private class AsyncTaskProviders extends AsyncTask<Void, Void, ProviderList> {
 
         @Override
         protected ProviderList doInBackground(Void... params) {
@@ -76,12 +83,12 @@ public class SplashScreen1 extends AwesomeSplash {
                 String url = URLClass.baseURL + URLClass.dataproviderURL + "providers";
                 RestTemplate restTemplate = new RestTemplate();
                 restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-                return restTemplate.getForObject(url, ProviderList.class);
+               providerList =  restTemplate.getForObject(url, ProviderList.class);
             } catch (Exception e) {
                 Log.e("MainActivity", e.getMessage(), e);
             }
 
-            return null;
+            return providerList;
         }
 
         @Override
@@ -100,16 +107,12 @@ public class SplashScreen1 extends AwesomeSplash {
                     providerListNames.add(listProviders.get(k).getProvider());
                 }
 
-
-
-
             } catch (NullPointerException e) {
-                Toast.makeText(getApplicationContext(), "Please Connect to internet",
-                        Toast.LENGTH_SHORT).show();
-                /*
-                 * Intent i = new Intent(SplashScreen.this, MainActivity.class);
-                 * i.putExtra("isEmpty",0);
-                 */
+                Log.i("Exception", e.toString());
+
+                /* * Intent i = new Intent(SplashScreen1.this, MainActivity.class);
+                 * i.putExtra("isEmpty",0);*/
+
             }
         }
     }

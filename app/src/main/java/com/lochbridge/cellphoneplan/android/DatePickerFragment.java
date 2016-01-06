@@ -71,11 +71,11 @@ public class DatePickerFragment extends DialogFragment
         }
 
         else {
-            Toast.makeText(getContext(), "Day after", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(getActivity(), CallLogStats.class);
+            Toast.makeText(getContext(), "Cannot fetch call logs from future", Toast.LENGTH_SHORT).show();
+            /*Intent intent = new Intent(getActivity(), CallLogStats.class);
             intent.putExtra("date", calendar.getTime());
             intent.putExtra("whenItHappened", "after");
-            startActivity(intent);
+            startActivity(intent);*/
         }
     }
 }
