@@ -30,64 +30,35 @@ public class AggregatedLogStats implements Serializable {
         return ldsInSeconds;
     }
 
-    public void setLdsInSeconds(int ldsInSeconds) {
-        this.ldsInSeconds = ldsInSeconds;
-    }
 
     public int getLddInSeconds() {
         return lddInSeconds;
     }
 
-    public void setLddInSeconds(int lddInSeconds) {
-        this.lddInSeconds = lddInSeconds;
-    }
 
     public int getLnsInSeconds() {
         return lnsInSeconds;
     }
 
-    public void setLnsInSeconds(int lnsInSeconds) {
-        this.lnsInSeconds = lnsInSeconds;
-    }
 
     public int getLndInSeconds() {
         return lndInSeconds;
-    }
-
-    public void setLndInSeconds(int lndInSeconds) {
-        this.lndInSeconds = lndInSeconds;
     }
 
     public int getSdsInSeconds() {
         return sdsInSeconds;
     }
 
-    public void setSdsInSeconds(int sdsInSeconds) {
-        this.sdsInSeconds = sdsInSeconds;
-    }
-
     public int getSddInSeconds() {
         return sddInSeconds;
-    }
-
-    public void setSddInSeconds(int sddInSeconds) {
-        this.sddInSeconds = sddInSeconds;
     }
 
     public int getSnsInSeconds() {
         return snsInSeconds;
     }
 
-    public void setSnsInSeconds(int snsInSeconds) {
-        this.snsInSeconds = snsInSeconds;
-    }
-
     public int getSndInSeconds() {
         return sndInSeconds;
-    }
-
-    public void setSndInSeconds(int sndInSeconds) {
-        this.sndInSeconds = sndInSeconds;
     }
 
     public int getSmsCount() {

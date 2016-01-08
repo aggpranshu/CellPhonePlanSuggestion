@@ -1,59 +1,48 @@
 package com.lochbridge.cellphoneplan.android;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-
-import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.client.RestTemplate;
-
 import android.Manifest;
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.CallLog;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
+
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.formatter.PercentFormatter;
-import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.gson.Gson;
+import com.lochbridge.cellphoneplan.Utils.URLClass;
 import com.lochbridge.cellphoneplan.spring.AggregatedLogStats;
 import com.lochbridge.cellphoneplan.spring.BillPlansList;
-import com.lochbridge.cellphoneplan.urls.URLClass;
 
-public class CallLogStats extends Activity {
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+
+public class UserLogsTabs extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CALLLOGS = 0;
     private static final int PERMISSION_REQUEST_MESSAGES = 1;
-
     LinearLayout linearLayoutChart;
-    CallLogs object;
-    private PieChart mChart;
-    private String providerName;
-    private Button buttonBill;
+    private CallLogs object;
     private View mLayout;
-    Date d;
+    private Date d;
+    private Bundle data;
+    private TabLayout tabLayout;
 
     private AggregatedLogStats aggregatedLogStats;
     private int smsCount = 0;
@@ -68,54 +57,18 @@ public class CallLogStats extends Activity {
             "type", "date"
     };
 
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        mLayout = findViewById(R.id.relativeLayout1);
-
-        linearLayoutChart = (LinearLayout) findViewById(R.id.aggregatedDataLayout);
-
-        TextView circleNameTv = (TextView) findViewById(R.id.circleNameTextView);
-        TextView validityTv = (TextView) findViewById(R.id.providerNameTextView);
-        buttonBill = (Button) findViewById(R.id.billButton);
+        setContentView(R.layout.activity_page_adapter);
+       /* Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+*/
+        mLayout = findViewById(R.id.main_layout);
 
         d = (Date) getIntent().getSerializableExtra("date");
         String whenItHappened = getIntent().getStringExtra("whenItHappened");
-
-        circleNameTv.setText(((ApplicationClass) getApplication()).getCircleName());
-        validityTv.setText(((ApplicationClass) getApplication()).getDays());
-
-        mChart = new PieChart(this);
-        // add pie chart to main layout
-        linearLayoutChart
-                .addView(mChart, new LinearLayout.LayoutParams(
-                        RelativeLayout.LayoutParams.MATCH_PARENT,
-                        RelativeLayout.LayoutParams.MATCH_PARENT));
-
-        // setContentView(mChart);
-        linearLayoutChart.setBackgroundColor(Color.parseColor("#55656C"));
-        // setContentView(t);
-
-        // configure pie chart
-        mChart.setUsePercentValues(true);
-
-        mChart.setDescription("User log Aggregated Stats");
-
-        // enable hole and configure
-        mChart.setDrawHoleEnabled(true);
-        mChart.setHoleColorTransparent(true);
-        mChart.setHoleRadius(5);
-        mChart.setTransparentCircleRadius(7);
-
-        // enable rotation of the chart by touch
-        mChart.setRotationAngle(0);
-        mChart.setRotationEnabled(true);
-
-        // customize legends
-        Legend l = mChart.getLegend();
-        l.setPosition(Legend.LegendPosition.ABOVE_CHART_RIGHT);
-        l.setXEntrySpace(7);
-        l.setYEntrySpace(5);
 
         if (whenItHappened.equals("before")) {
             MesgRecords(d);
@@ -126,22 +79,20 @@ public class CallLogStats extends Activity {
         } else {
             // fetchCallRecordsFromPast(d,whenItHappened);
         }
-        // payPerSecond();
-        buttonBill.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new BgAsyncTaskForBillGeneration().execute();
-            }
-        });
+
+
+        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        tabLayout.addTab(tabLayout.newTab().setText("Calls"));
+        tabLayout.addTab(tabLayout.newTab().setText("Messages and Internet"));
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
     }
 
     private void MesgRecords(Date d) {
 
-        if (ActivityCompat.checkSelfPermission(this,Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
             requestPermissionsCallLogs();
-        }
-
-        else {
+        } else {
             Uri uri = Uri.parse("content://sms");
             Cursor curMesg = getContentResolver().query(uri, projectionMesg, "type=2", null, null);
 
@@ -166,10 +117,9 @@ public class CallLogStats extends Activity {
         String selection = "type = 2";
         ContentResolver resolver = getApplicationContext().getContentResolver();
 
-        if (ActivityCompat.checkSelfPermission(this,Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
             requestPermissionsMesgs();
-        }
-        else {
+        } else {
             Cursor curCall = resolver.query(CallLog.Calls.CONTENT_URI, projectionCall, selection, null,
                     null);
 
@@ -218,7 +168,7 @@ public class CallLogStats extends Activity {
                 @Override
                 public void onClick(View view) {
                     // Request the permission
-                    ActivityCompat.requestPermissions(CallLogStats.this,
+                    ActivityCompat.requestPermissions(UserLogsTabs.this,
                             new String[]{Manifest.permission.READ_SMS},
                             PERMISSION_REQUEST_MESSAGES);
                 }
@@ -243,7 +193,7 @@ public class CallLogStats extends Activity {
                 @Override
                 public void onClick(View view) {
                     // Request the permission
-                    ActivityCompat.requestPermissions(CallLogStats.this,
+                    ActivityCompat.requestPermissions(UserLogsTabs.this,
                             new String[]{Manifest.permission.READ_CALL_LOG},
                             PERMISSION_REQUEST_CALLLOGS);
                 }
@@ -259,6 +209,7 @@ public class CallLogStats extends Activity {
                     PERMISSION_REQUEST_CALLLOGS);
         }
     }
+
 
     private class BgAsyncTaskForLogAggregation extends
             AsyncTask<HashMap<String, CallLogs>, Void, AggregatedLogStats> {
@@ -279,12 +230,12 @@ public class CallLogStats extends Activity {
                 restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
                 aggregatedLogStats = restTemplate.postForObject(
                         url, params[0], AggregatedLogStats.class);
-                return aggregatedLogStats;
+
             } catch (Exception e) {
                 Log.e("MainActivity", e.getMessage(), e);
             }
 
-            return null;
+            return aggregatedLogStats;
         }
 
         @Override
@@ -296,86 +247,35 @@ public class CallLogStats extends Activity {
         protected void onPostExecute(AggregatedLogStats aggregatedLogStats) {
             super.onPostExecute(aggregatedLogStats);
 
-            Integer[] arrayData = {
-                    aggregatedLogStats.getLddInSeconds(),
-                    aggregatedLogStats.getLdsInSeconds(), aggregatedLogStats.getLnsInSeconds(),
-                    aggregatedLogStats.getLndInSeconds(), aggregatedLogStats.getSdsInSeconds(),
-                    aggregatedLogStats.getSddInSeconds(), aggregatedLogStats.getSnsInSeconds(),
-                    aggregatedLogStats.getSndInSeconds()
-            };
+            Toast.makeText(getApplicationContext(), "hello", Toast.LENGTH_SHORT).show();
+            data = new Bundle();
+            data.putSerializable("logAggregationObj", aggregatedLogStats);
 
-            String[] descriptionArray = {"Local Day Different Network","Local Day Same Network",
-                    "Local Day Same Network","Local Night Different Network",
-                    "STD Day Same Network","STD Day Different Network","STD Night Same Network",
-                    "STD Night Different Network"};
+            final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+            final TabAdapter adapter = new TabAdapter
+                    (getSupportFragmentManager(), data);
+            viewPager.setAdapter(adapter);
+            viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+            tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
+                    viewPager.setCurrentItem(tab.getPosition());
+                }
 
-            ArrayList<Entry> yVals1 = new ArrayList<Entry>();
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab) {
 
-            for (int i = 0; i < arrayData.length; i++)
-                yVals1.add(new Entry(arrayData[i], i));
+                }
 
-            ArrayList<String> xVals = new ArrayList<String>();
+                @Override
+                public void onTabReselected(TabLayout.Tab tab) {
 
-            for (int i = 0; i < descriptionArray.length; i++)
-                xVals.add(descriptionArray[i]);
+                }
+            });
 
-            // create pie data set
-            PieDataSet dataSet = new PieDataSet(yVals1, "Market Share");
-            dataSet.setSliceSpace(3);
-            dataSet.setSelectionShift(5);
-
-            // add many colors
-            ArrayList<Integer> colors = new ArrayList<Integer>();
-
-            for (int c : ColorTemplate.VORDIPLOM_COLORS)
-                colors.add(c);
-
-            for (int c : ColorTemplate.JOYFUL_COLORS)
-                colors.add(c);
-
-            for (int c : ColorTemplate.COLORFUL_COLORS)
-                colors.add(c);
-
-            for (int c : ColorTemplate.LIBERTY_COLORS)
-                colors.add(c);
-
-            for (int c : ColorTemplate.PASTEL_COLORS)
-                colors.add(c);
-
-            colors.add(ColorTemplate.getHoloBlue());
-            dataSet.setColors(colors);
-
-            // instantiate pie data object now
-            PieData data = new PieData(xVals, dataSet);
-            data.setValueFormatter(new PercentFormatter());
-            data.setValueTextSize(11f);
-            data.setValueTextColor(Color.GRAY);
-
-            mChart.setDrawSliceText(false);
-
-            mChart.setData(data);
-
-            // undo all highlights
-            mChart.highlightValues(null);
-
-            // update pie chart
-            mChart.invalidate();
-
-            /*
-             * totalDayCallsTv.setText(String.valueOf(aggregatedLogStats
-             * .getTotalCallDuringDayInSeconds()) + " sec");
-             * totalNightCallsTv.setText(String.valueOf(aggregatedLogStats
-             * .getTotalCallDuringNightInSeconds()) + " sec");
-             * totalCallsTv.setText(String.valueOf(aggregatedLogStats
-             * .getTotalCallDuringDayInSeconds() +
-             * aggregatedLogStats.getTotalCallDuringNightInSeconds()) + " sec");
-             */
-
-            // Toast.makeText(getApplicationContext(), aggregatedLogStats.toString(),
-            // Toast.LENGTH_SHORT).show();
-            // setLayoutData(aggregatedLogStats);
         }
     }
+
 
     private class BgAsyncTaskForBillGeneration extends AsyncTask<Void, Void, BillPlansList> {
 
@@ -415,7 +315,7 @@ public class CallLogStats extends Activity {
             Toast.makeText(getApplicationContext(), billPlansList.toString(), Toast.LENGTH_SHORT)
                     .show();
 
-            Intent i = new Intent(CallLogStats.this, BillList.class);
+            Intent i = new Intent(UserLogsTabs.this, BillList.class);
             i.putExtra("billObject", billPlansList);
             startActivity(i);
 
@@ -449,7 +349,7 @@ public class CallLogStats extends Activity {
                 Snackbar.make(mLayout, "SMS permission was granted. Starting preview.",
                         Snackbar.LENGTH_SHORT)
                         .show();
-               MesgRecords(d);
+                MesgRecords(d);
             } else {
                 // Permission request was denied.
                 Snackbar.make(mLayout, "SMS permission request was denied.",
@@ -459,5 +359,7 @@ public class CallLogStats extends Activity {
         }
 
     }
-
 }
+
+
+

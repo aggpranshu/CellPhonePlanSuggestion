@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-//import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
@@ -21,7 +20,7 @@ import android.widget.Toast;
 import com.lochbridge.cellphoneplan.spring.BillPlans;
 import com.lochbridge.cellphoneplan.spring.BillPlansList;
 import com.lochbridge.cellphoneplan.spring.PlanDetails;
-import com.lochbridge.cellphoneplan.urls.URLClass;
+import com.lochbridge.cellphoneplan.Utils.URLClass;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,7 +32,6 @@ import java.util.List;
 
 public class BillList extends AppCompatActivity {
 
-    private List<BillPlans> initialBillPlans;
     private TableLayout stk;
 
     @Override
@@ -44,22 +42,22 @@ public class BillList extends AppCompatActivity {
 
         BillPlansList billPlansList = (BillPlansList) getIntent()
                 .getSerializableExtra("billObject");
-        initialBillPlans = billPlansList.getBill();
+        List<BillPlans> initialBillPlans = billPlansList.getBill();
         Log.i("BILLSINBILLCLASS", initialBillPlans.toString());
 
         BillPlans basicBill = initialBillPlans.get(0);
 
         List<BillPlans> refinedBillPlans = new ArrayList<BillPlans>();
 
-        for(int i = 3;i<initialBillPlans.size();i++){
-            if(basicBill.getBill()<initialBillPlans.get(i).getBill()){
+        for(int i = 3;i< initialBillPlans.size();i++){
+            if(basicBill.getBill()< initialBillPlans.get(i).getBill()){
                 refinedBillPlans.add(0,basicBill);
-                refinedBillPlans.add(1,initialBillPlans.get(1));
-                refinedBillPlans.add(2,initialBillPlans.get(2));
+                refinedBillPlans.add(1, initialBillPlans.get(1));
+                refinedBillPlans.add(2, initialBillPlans.get(2));
             }
             else
             {
-                refinedBillPlans.add(i,initialBillPlans.get(i));
+                refinedBillPlans.add(i, initialBillPlans.get(i));
             }
 
         }
@@ -170,11 +168,6 @@ public class BillList extends AppCompatActivity {
             }
 
             return null;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
         }
 
         @Override

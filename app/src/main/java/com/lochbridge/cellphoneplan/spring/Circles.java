@@ -8,12 +8,7 @@ import java.io.Serializable;
  */
 public class Circles implements Serializable {
 
-    private int circleID;
     private String circleName;
-
-    public int getCircleID() {
-        return circleID;
-    }
 
     public String getCircleName() {
         return circleName;

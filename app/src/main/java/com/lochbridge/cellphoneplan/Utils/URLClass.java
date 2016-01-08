@@ -1,9 +1,6 @@
-package com.lochbridge.cellphoneplan.urls;
+package com.lochbridge.cellphoneplan.Utils;
 
 import android.app.Activity;
-import android.support.v7.app.AppCompatActivity;
-
-import com.lochbridge.cellphoneplan.android.ApplicationClass;
 
 /**
  * Created by paggarwal1 on 12/6/2015.

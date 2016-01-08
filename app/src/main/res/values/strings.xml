@@ -2,14 +2,18 @@
     <string name="app_name">Cell Phone Plan Suggestor</string>
     <string name="facebookID">932989630127756</string>
     <string name="title_activity_splash_screen">SplashScreen</string>
-    <string name="circleSpinner">Select your circle</string>
-    <string name="durationSpinner">Select the duration of the plan</string>
-    <string name="plan_picking_text">Select the duration of the plan</string>
     <string name="circle_picking_text">Select the circle</string>
+    <string name="provider_picking_text">Select the provider</string>
     <string name="date">Pick a date</string>
     <string name="generate_bill">Generate my Bill</string>
     <string name="provider">Provider</string>
     <string name="data_usage">Select your data usage</string>
     <string name="duration">Duration</string>
     <string name="carrier_name">Carrier Name</string>
+    <string name="title_activity_page_adapter">PageAdapterActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

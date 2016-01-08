@@ -42,16 +42,20 @@ import com.lochbridge.cellphoneplan.spring.CircleList;
 import com.lochbridge.cellphoneplan.spring.Circles;
 import com.lochbridge.cellphoneplan.spring.PlanDetails;
 import com.lochbridge.cellphoneplan.spring.PlanDetailsList;
-import com.lochbridge.cellphoneplan.urls.URLClass;
+import com.lochbridge.cellphoneplan.Utils.URLClass;
 
 public class MainActivity extends AppCompatActivity {
 
-    String[] arrayCall;
-    String[] arrayMesg;
-    String[] arrayInternet;
+    private String[] arrayCall;
+    private String[] arrayMesg;
+    private String[] arrayInternet;
 
-    ProgressDialog dialog;
-    CardView providerCV, circleCV, dataPlanCV, dateCV, multiSelectCV;
+    private ProgressDialog dialog;
+    private CardView providerCV;
+    private CardView circleCV;
+    private CardView dataPlanCV;
+    private CardView dateCV;
+    private CardView multiSelectCV;
     private View mLayout;
     private TextView carrierName, circleName, dataUsage;
     private List<PlanDetails> listPlanDetails;
@@ -151,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                DialogFragment newFragment = new DatePickerFragment();
+                DialogFragment newFragment = new FragmentDatePicker();
                 newFragment.show(getSupportFragmentManager(), "datePicker");
             }
         });
@@ -178,17 +182,17 @@ public class MainActivity extends AppCompatActivity {
 
                 try {
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(),
-                            R.layout.dfghjkl, arrayCall);
+                            R.layout.simple_multiselect_listview, arrayCall);
                     callLV.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
                     callLV.setAdapter(adapter);
 
                     ArrayAdapter<String> adapter2 = new ArrayAdapter<>(getApplicationContext(),
-                            R.layout.dfghjkl, arrayMesg);
+                            R.layout.simple_multiselect_listview, arrayMesg);
                     mesgLV.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
                     mesgLV.setAdapter(adapter2);
 
                     ArrayAdapter<String> adapter3 = new ArrayAdapter<>(getApplicationContext(),
-                            R.layout.dfghjkl, arrayInternet);
+                            R.layout.simple_multiselect_listview, arrayInternet);
                     internetLV.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
                     internetLV.setAdapter(adapter3);
 
@@ -276,6 +280,7 @@ public class MainActivity extends AppCompatActivity {
         dataAdapterProviderList
                 .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerProvider.setAdapter(dataAdapterProviderList);
+
         /*
          * Spinner for specifying the name of the circles for the current Carrier of the user. This
          * is being populated by the circleListNames - ArrayList
@@ -350,13 +355,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        // mTokenTracker.stopTracking();
-        // mProfileTracker.stopTracking();
-    }
-
-    @Override
     protected void onRestart() {
         super.onRestart();
         Profile profile = Profile.getCurrentProfile();
@@ -386,11 +384,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
             return planDetailsList;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
         }
 
         @Override
@@ -460,11 +453,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
         protected void onPostExecute(CircleList circleList) {
 
             try {
@@ -494,10 +482,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (NullPointerException e) {
                 Toast.makeText(getApplicationContext(), "Please Connect to internet",
                         Toast.LENGTH_SHORT).show();
-                /*
-                 * Intent i = new Intent(SplashScreen.this, MainActivity.class);
-                 * i.putExtra("isEmpty",0);
-                 */
+
             }
         }
     }

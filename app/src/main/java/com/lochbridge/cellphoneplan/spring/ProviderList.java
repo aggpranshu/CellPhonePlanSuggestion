@@ -7,7 +7,7 @@ import java.util.List;
  */
 public class ProviderList {
 
-    List<Providers> listProviders;
+    private List<Providers> listProviders;
 
     public List<Providers> getListProviders() {
         return listProviders;

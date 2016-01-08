@@ -13,8 +13,5 @@ class AggregatedLogStatsList implements Serializable {
     public List<AggregatedLogStats> getAggregatedLogStatsList() {
         return aggregatedLogStatsList;
     }
-
-    public void setAggregatedLogStatsList(List<AggregatedLogStats> aggregatedLogStatsList) {
-        this.aggregatedLogStatsList = aggregatedLogStatsList;
-    }
+    
 }

@@ -1,107 +1,71 @@
-
 package com.lochbridge.cellphoneplan.android;
 
-import java.util.ArrayList;
-import java.util.List;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.provider.SyncStateContract;
+import android.util.Log;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Toast;
+
+import com.daimajia.androidanimations.library.Techniques;
+import com.lochbridge.cellphoneplan.spring.ProviderList;
+import com.lochbridge.cellphoneplan.spring.Providers;
+import com.lochbridge.cellphoneplan.Utils.URLClass;
+import com.viksaa.sssplash.lib.activity.AwesomeSplash;
+import com.viksaa.sssplash.lib.cnst.Flags;
+import com.viksaa.sssplash.lib.model.ConfigSplash;
 
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
-import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ProgressBar;
-import android.widget.Spinner;
-import android.widget.Toast;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.lochbridge.cellphoneplan.spring.CircleList;
-import com.lochbridge.cellphoneplan.spring.ProviderList;
-import com.lochbridge.cellphoneplan.spring.Providers;
-import com.lochbridge.cellphoneplan.urls.URLClass;
+/**
+ * Created by paggarwal1 on 12/23/2015.
+ */
+public class SplashScreen extends AwesomeSplash {
 
-public class SplashScreen extends AppCompatActivity {
-
-    List<String> providerListNames;
-    Spinner spinnerProvider;
-    ProgressBar progressBar;
+    ArrayList<String> providerListNames;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.splash_screen);
+    public void initSplash(ConfigSplash configSplash) {
 
-        spinnerProvider = (Spinner) findViewById(R.id.spinnerProvider);
-        progressBar = (ProgressBar)findViewById(R.id.progressBar);
+            /* you don't have to override every property */
+
+        //Customize Circular Reveal
+        configSplash.setBackgroundColor(R.color.colorPrimary); //any color you want form colors.xml
+        configSplash.setAnimCircularRevealDuration(2000); //int ms
+        configSplash.setRevealFlagX(Flags.REVEAL_RIGHT);  //or Flags.REVEAL_LEFT
+        configSplash.setRevealFlagY(Flags.REVEAL_BOTTOM); //or Flags.REVEAL_TOP
+
+        //Choose LOGO OR PATH; if you don't provide String value for path it's logo by default
+
+        //Customize Logo
+        configSplash.setLogoSplash(R.mipmap.ic_launcher); //or any other drawable
+        configSplash.setAnimLogoSplashDuration(1500); //int ms
+        configSplash.setAnimLogoSplashTechnique(Techniques.SlideInDown); //choose one form Techniques (ref: https://github.com/daimajia/AndroidViewAnimations)
+
+        //Customize Title
+        configSplash.setTitleSplash("Cell Phone Plan Suggestion App");
+        configSplash.setTitleTextColor(R.color.com_facebook_likeboxcountview_text_color);
+        configSplash.setTitleTextSize(60f); //float value
+        configSplash.setAnimTitleDuration(1000);
+        configSplash.setAnimTitleTechnique(Techniques.SlideInUp);
+        //  configSplash.setTitleFont("fonts/myfont.ttf"); //provide string to your font located in assets/fonts/
 
         new BackgroundSplashTaskForProviders().execute();
 
-        spinnerProvider.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String item = parent.getItemAtPosition(position).toString();
-                if (item.equals("List of Providers")) {
-
-                } else {
-                    ((ApplicationClass) getApplication()).setProviderName(item);
-                    new BackgroundSplashTask().execute(item);
-
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
     }
 
-    private class BackgroundSplashTask extends AsyncTask<String, Void, CircleList> {
+    @Override
+    public void animationsFinished() {
 
-        @Override
-        protected CircleList doInBackground(String... params) {
-            try {
-                String url = URLClass.baseURL + URLClass.dataproviderURL + params[0];
-                ((ApplicationClass) getApplication()).setProviderName(params[0]);
-
-                RestTemplate restTemplate = new RestTemplate();
-                restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-                return restTemplate.getForObject(url, CircleList.class);
-            } catch (Exception e) {
-                Log.e("MainActivity", e.getMessage(), e);
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected void onPostExecute(CircleList circleList) {
-
-            try {
-                super.onPostExecute(circleList);
-                Intent i = new Intent(SplashScreen.this,
-                        MainActivity.class);
-                i.putExtra("classInfo", circleList);
-                startActivity(i);
-                finish();
-            } catch (NullPointerException e) {
-                Toast.makeText(getApplicationContext(), "Please Connect to internet",
-                        Toast.LENGTH_SHORT).show();
-                /*
-                 * Intent i = new Intent(SplashScreen.this, MainActivity.class);
-                 * i.putExtra("isEmpty",0);
-                 */
-            }
-        }
+        Intent i = new Intent(SplashScreen.this,MainActivity.class);
+        i.putStringArrayListExtra("ListProviders", providerListNames);
+        startActivity(i);
+        finish();
     }
 
     private class BackgroundSplashTaskForProviders extends AsyncTask<Void, Void, ProviderList> {
@@ -127,23 +91,17 @@ public class SplashScreen extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(ProviderList providerList) {
-
-            progressBar.setVisibility(View.INVISIBLE);
             try {
                 super.onPostExecute(providerList);
                 List<Providers> listProviders = providerList.getListProviders();
-                 providerListNames = new ArrayList<String>();
+                providerListNames = new ArrayList<String>();
                 providerListNames.add("List of Providers");
                 for (int k = 0; k < listProviders.size(); k++) {
                     providerListNames.add(listProviders.get(k).getProvider());
                 }
 
-                ArrayAdapter<String> dataAdapterProviderList = new ArrayAdapter<String>(
-                        getApplicationContext(),
-                        android.R.layout.simple_spinner_item, providerListNames);
-                dataAdapterProviderList
-                        .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spinnerProvider.setAdapter(dataAdapterProviderList);
+
+
 
             } catch (NullPointerException e) {
                 Toast.makeText(getApplicationContext(), "Please Connect to internet",
@@ -155,4 +113,7 @@ public class SplashScreen extends AppCompatActivity {
             }
         }
     }
+
+
 }
+

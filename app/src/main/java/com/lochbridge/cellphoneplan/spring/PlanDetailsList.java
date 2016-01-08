@@ -7,7 +7,7 @@ import java.util.List;
  * Created by PAggarwal1 on 12/1/2015.
  */
 public class PlanDetailsList implements Serializable {
-    List<PlanDetails> listPlanDetails;
+    private List<PlanDetails> listPlanDetails;
 
     public List<PlanDetails> getListPlanDetails() {
         return listPlanDetails;

@@ -5,14 +5,13 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    android:background="@color/colorPrimary"
     tools:context="com.lochbridge.cellphoneplanapp.cellphoneplan.BillList">
 
 
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/scrollView"
+        android:id="@+id/scrollViewTab"
         android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true"
         android:scrollbarAlwaysDrawHorizontalTrack="true">

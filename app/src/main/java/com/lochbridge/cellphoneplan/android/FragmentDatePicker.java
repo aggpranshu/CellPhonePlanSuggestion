@@ -17,11 +17,11 @@ import android.widget.Toast;
 /**
  * Created by PAggarwal1 on 9/16/2015.
  */
-public class DatePickerFragment extends DialogFragment
+public class FragmentDatePicker extends DialogFragment
         implements DatePickerDialog.OnDateSetListener {
     private long diffInMilis;
     private long diffInDays;
-    CallLogStats callLogStats = new CallLogStats();
+
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -55,7 +55,7 @@ public class DatePickerFragment extends DialogFragment
 
             else {
                 Toast.makeText(getContext(), "Day before", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getActivity().getBaseContext(), CallLogStats.class);
+                Intent intent = new Intent(getActivity().getBaseContext(), UserLogsTabs.class);
                 // Intent intent1=new Intent(getActivity(),MsgLogStats.class);
                 intent.putExtra("date", calendar.getTime());
                 intent.putExtra("whenItHappened", "before");
