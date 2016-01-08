@@ -25,11 +25,13 @@ public class FragmentDatePicker extends DialogFragment
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+
         // Use the current date as the default date in the picker
         final Calendar c = Calendar.getInstance();
         int year = c.get(YEAR);
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
+
         // Create a new instance of DatePickerDialog and return it
         return new DatePickerDialog(getActivity(), this, year, month, day);
     }
@@ -56,11 +58,10 @@ public class FragmentDatePicker extends DialogFragment
             else {
                 Toast.makeText(getContext(), "Day before", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getActivity().getBaseContext(), UserLogsTabs.class);
-                // Intent intent1=new Intent(getActivity(),MsgLogStats.class);
                 intent.putExtra("date", calendar.getTime());
                 intent.putExtra("whenItHappened", "before");
                 startActivity(intent);
-                // startActivity(intent1);
+
             }
         }
 

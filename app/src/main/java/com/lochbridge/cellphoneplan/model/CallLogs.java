@@ -1,5 +1,5 @@
 
-package com.lochbridge.cellphoneplan.android;
+package com.lochbridge.cellphoneplan.model;
 
 import java.io.Serializable;
 import java.text.ParseException;
@@ -9,7 +9,7 @@ import java.util.Date;
 /**
  * Created by PAggarwal1 on 9/30/2015.
  */
-class CallLogs implements Serializable {
+public class CallLogs implements Serializable {
     private Long number;
     private int durationDay;
     private int durationNight;
@@ -25,7 +25,7 @@ class CallLogs implements Serializable {
         this.durationInSeconds = durationInSeconds;
     }
 
-    CallLogs(String number) {
+    public CallLogs(String number) {
         this.number = Long.valueOf(number);
     }
 

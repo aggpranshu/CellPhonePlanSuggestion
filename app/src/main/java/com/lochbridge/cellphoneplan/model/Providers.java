@@ -1,4 +1,4 @@
-package com.lochbridge.cellphoneplan.spring;
+package com.lochbridge.cellphoneplan.model;
 
 /**
  * Created by paggarwal1 on 12/7/2015.

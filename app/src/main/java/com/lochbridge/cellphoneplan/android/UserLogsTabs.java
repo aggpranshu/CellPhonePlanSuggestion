@@ -22,8 +22,9 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.lochbridge.cellphoneplan.Utils.URLClass;
-import com.lochbridge.cellphoneplan.spring.AggregatedLogStats;
-import com.lochbridge.cellphoneplan.spring.BillPlansList;
+import com.lochbridge.cellphoneplan.model.AggregatedLogStats;
+import com.lochbridge.cellphoneplan.model.BillPlansList;
+import com.lochbridge.cellphoneplan.model.CallLogs;
 
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -232,7 +233,7 @@ public class UserLogsTabs extends AppCompatActivity {
                         url, params[0], AggregatedLogStats.class);
 
             } catch (Exception e) {
-                Log.e("MainActivity", e.getMessage(), e);
+                Log.e("UserTelecomDetailsActivity", e.getMessage(), e);
             }
 
             return aggregatedLogStats;
@@ -296,7 +297,7 @@ public class UserLogsTabs extends AppCompatActivity {
                 return restTemplate.postForObject(url + "/bill", aggregatedLogStats,
                         BillPlansList.class);
             } catch (Exception e) {
-                Log.e("MainActivity", e.getMessage(), e);
+                Log.e("UserTelecomDetailsActivity", e.getMessage(), e);
             }
 
             return null;

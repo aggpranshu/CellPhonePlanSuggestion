@@ -22,7 +22,7 @@ public class TabAdapter extends FragmentStatePagerAdapter {
 
             case 0:
               if(data.getSerializable("logAggregationObj")!=null) {
-                    PieChartFragment tab3 = new PieChartFragment();
+                    FragmentPieChart tab3 = new FragmentPieChart();
                     tab3.setArguments(data);
                     return tab3;
                 }

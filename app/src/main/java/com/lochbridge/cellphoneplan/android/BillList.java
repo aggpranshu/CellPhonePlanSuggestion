@@ -17,9 +17,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.lochbridge.cellphoneplan.spring.BillPlans;
-import com.lochbridge.cellphoneplan.spring.BillPlansList;
-import com.lochbridge.cellphoneplan.spring.PlanDetails;
+import com.lochbridge.cellphoneplan.model.BillPlans;
+import com.lochbridge.cellphoneplan.model.BillPlansList;
+import com.lochbridge.cellphoneplan.model.PlanDetails;
 import com.lochbridge.cellphoneplan.Utils.URLClass;
 
 import org.json.JSONException;
@@ -164,7 +164,7 @@ public class BillList extends AppCompatActivity {
                 restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
                 return restTemplate.getForObject(url, PlanDetails.class);
             } catch (Exception e) {
-                Log.e("MainActivity", e.getMessage(), e);
+                Log.e("UserTelecomDetailsActivity", e.getMessage(), e);
             }
 
             return null;

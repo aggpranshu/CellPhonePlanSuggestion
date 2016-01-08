@@ -1,5 +1,5 @@
 
-package com.lochbridge.cellphoneplan.spring;
+package com.lochbridge.cellphoneplan.model;
 
 import java.io.Serializable;
 
@@ -8,7 +8,16 @@ import java.io.Serializable;
  */
 public class Circles implements Serializable {
 
+    private String circleID;
     private String circleName;
+
+    public String setCircleID() {
+        return circleID;
+    }
+
+    public void setCircleID(String circleID) {
+        this.circleID = circleID;
+    }
 
     public String getCircleName() {
         return circleName;

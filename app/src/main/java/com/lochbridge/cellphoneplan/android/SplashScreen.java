@@ -2,15 +2,12 @@ package com.lochbridge.cellphoneplan.android;
 
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.provider.SyncStateContract;
 import android.util.Log;
-import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
-import com.lochbridge.cellphoneplan.spring.ProviderList;
-import com.lochbridge.cellphoneplan.spring.Providers;
+import com.lochbridge.cellphoneplan.model.ProviderList;
+import com.lochbridge.cellphoneplan.model.Providers;
 import com.lochbridge.cellphoneplan.Utils.URLClass;
 import com.viksaa.sssplash.lib.activity.AwesomeSplash;
 import com.viksaa.sssplash.lib.cnst.Flags;
@@ -62,7 +59,7 @@ public class SplashScreen extends AwesomeSplash {
     @Override
     public void animationsFinished() {
 
-        Intent i = new Intent(SplashScreen.this,MainActivity.class);
+        Intent i = new Intent(SplashScreen.this,UserTelecomDetailsActivity.class);
         i.putStringArrayListExtra("ListProviders", providerListNames);
         startActivity(i);
         finish();
@@ -78,7 +75,7 @@ public class SplashScreen extends AwesomeSplash {
                 restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
                 return restTemplate.getForObject(url, ProviderList.class);
             } catch (Exception e) {
-                Log.e("MainActivity", e.getMessage(), e);
+                Log.e("SplashScreen", e.getMessage(), e);
             }
 
             return null;
@@ -104,12 +101,8 @@ public class SplashScreen extends AwesomeSplash {
 
 
             } catch (NullPointerException e) {
-                Toast.makeText(getApplicationContext(), "Please Connect to internet",
+                Toast.makeText(getApplicationContext(), "OOPS ! Something went wrong.",
                         Toast.LENGTH_SHORT).show();
-                /*
-                 * Intent i = new Intent(SplashScreen.this, MainActivity.class);
-                 * i.putExtra("isEmpty",0);
-                 */
             }
         }
     }

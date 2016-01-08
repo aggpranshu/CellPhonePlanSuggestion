@@ -38,13 +38,13 @@ import com.facebook.CallbackManager;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.login.widget.LoginButton;
-import com.lochbridge.cellphoneplan.spring.CircleList;
-import com.lochbridge.cellphoneplan.spring.Circles;
-import com.lochbridge.cellphoneplan.spring.PlanDetails;
-import com.lochbridge.cellphoneplan.spring.PlanDetailsList;
+import com.lochbridge.cellphoneplan.model.CircleList;
+import com.lochbridge.cellphoneplan.model.Circles;
+import com.lochbridge.cellphoneplan.model.PlanDetails;
+import com.lochbridge.cellphoneplan.model.PlanDetailsList;
 import com.lochbridge.cellphoneplan.Utils.URLClass;
 
-public class MainActivity extends AppCompatActivity {
+public class UserTelecomDetailsActivity extends AppCompatActivity {
 
     private String[] arrayCall;
     private String[] arrayMesg;
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
          */
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_details);
+        setContentView(R.layout.layout_usertelecom_details);
 
         mLayout = findViewById(R.id.relativeLayout);
 
@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
                 getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
                 Toast.makeText(getApplicationContext(), "dialog", Toast.LENGTH_SHORT).show();
                 // custom dialog
-                final Dialog dialog = new Dialog(MainActivity.this);
+                final Dialog dialog = new Dialog(UserTelecomDetailsActivity.this);
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setContentView(R.layout.tab_layout);
 
@@ -260,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
                     // spinnerDuration.setVisibility(View.INVISIBLE);
                 } else {
                     carrierName.setText(item);
-                    dialog = new ProgressDialog(MainActivity.this);
+                    dialog = new ProgressDialog(UserTelecomDetailsActivity.this);
                     dialog.setMessage("Loading data...");
                     dialog.show();
                     new BGAsyncTaskCircle().execute(item);
@@ -324,11 +324,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    /*
-     * Button for selecting the Date. The call logs fetched would be filtered based on the value of
-     * this Date
-     */
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         callbackManager.onActivityResult(requestCode, resultCode, data);
@@ -380,7 +375,7 @@ public class MainActivity extends AppCompatActivity {
                 planDetailsList = restTemplate
                         .getForObject(url, PlanDetailsList.class);
             } catch (Exception e) {
-                Log.e("MainActivity", e.getMessage(), e);
+                Log.e("PlanDetails", e.getMessage(), e);
             }
 
             return planDetailsList;
@@ -446,7 +441,7 @@ public class MainActivity extends AppCompatActivity {
                 restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
                 return restTemplate.getForObject(url, CircleList.class);
             } catch (Exception e) {
-                Log.e("MainActivity", e.getMessage(), e);
+                Log.e("UserTelecomDetailsActivity", e.getMessage(), e);
             }
 
             return null;

@@ -1,4 +1,4 @@
-package com.lochbridge.cellphoneplan.spring;
+package com.lochbridge.cellphoneplan.model;
 
 import java.util.List;
 

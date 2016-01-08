@@ -26,10 +26,10 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.lochbridge.cellphoneplan.spring.AggregatedLogStats;
+import com.lochbridge.cellphoneplan.model.AggregatedLogStats;
 
 
-public class PieChartFragment extends Fragment {
+public class FragmentPieChart extends Fragment {
 
 
     private Bundle data;
