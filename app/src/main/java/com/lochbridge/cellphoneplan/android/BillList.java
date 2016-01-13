@@ -49,7 +49,7 @@ public class BillList extends AppCompatActivity {
 
         List<BillPlans> refinedBillPlans = new ArrayList<BillPlans>();
 
-        for(int i = 3;i< initialBillPlans.size();i++){
+        /*for(int i = 3;i< initialBillPlans.size();i++){
             if(basicBill.getBill()< initialBillPlans.get(i).getBill()){
                 refinedBillPlans.add(0,basicBill);
                 refinedBillPlans.add(1, initialBillPlans.get(1));
@@ -60,7 +60,7 @@ public class BillList extends AppCompatActivity {
                 refinedBillPlans.add(i, initialBillPlans.get(i));
             }
 
-        }
+        }*/
 
 
         initializeTable(refinedBillPlans);

@@ -10,7 +10,6 @@ import org.json.JSONObject;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -22,13 +21,11 @@ import android.support.v7.widget.CardView;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,18 +35,18 @@ import com.facebook.CallbackManager;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.login.widget.LoginButton;
+import com.lochbridge.cellphoneplan.Utils.URLClass;
 import com.lochbridge.cellphoneplan.model.CircleList;
 import com.lochbridge.cellphoneplan.model.Circles;
 import com.lochbridge.cellphoneplan.model.PlanDetails;
 import com.lochbridge.cellphoneplan.model.PlanDetailsList;
-import com.lochbridge.cellphoneplan.Utils.URLClass;
 
 public class UserTelecomDetailsActivity extends AppCompatActivity {
 
+    static int i = 0;
     private String[] arrayCall;
     private String[] arrayMesg;
     private String[] arrayInternet;
-
     private ProgressDialog dialog;
     private CardView providerCV;
     private CardView circleCV;
@@ -65,6 +62,9 @@ public class UserTelecomDetailsActivity extends AppCompatActivity {
     private CallbackManager callbackManager;
     private List<String> circleListNames;
     private ListView callLV, mesgLV, internetLV;
+    private ArrayList<String> userSelectedPlan;
+
+    private Bundle plansBundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,8 +116,7 @@ public class UserTelecomDetailsActivity extends AppCompatActivity {
                     final Snackbar snackbar = Snackbar
                             .make(mLayout, "Select Provider First", Snackbar.LENGTH_LONG);
                     snackbar.show();
-                }
-                else {
+                } else {
                     spinnerProvider.performClick();
                 }
             }
@@ -130,8 +129,7 @@ public class UserTelecomDetailsActivity extends AppCompatActivity {
                     final Snackbar snackbar = Snackbar
                             .make(mLayout, "Select Provider First", Snackbar.LENGTH_LONG);
                     snackbar.show();
-                }
-                else {
+                } else {
                     spinnerCircle.performClick();
                 }
             }
@@ -144,8 +142,7 @@ public class UserTelecomDetailsActivity extends AppCompatActivity {
                     final Snackbar snackbar = Snackbar
                             .make(mLayout, "Select Circle First", Snackbar.LENGTH_LONG);
                     snackbar.show();
-                }
-                else {
+                } else {
                     spinnerData.performClick();
                 }
             }
@@ -168,56 +165,18 @@ public class UserTelecomDetailsActivity extends AppCompatActivity {
                 getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
                 Toast.makeText(getApplicationContext(), "dialog", Toast.LENGTH_SHORT).show();
                 // custom dialog
-                final Dialog dialog = new Dialog(UserTelecomDetailsActivity.this);
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dialog.setContentView(R.layout.tab_layout);
-
-                dialog.getWindow().setLayout((int) (displayMetrics.widthPixels * 0.85),
-                        (int) (displayMetrics.heightPixels * 0.75));
 
                 // declaration of multi select spinners
-                callLV = (ListView) dialog.findViewById(R.id.listViewCall);
-                mesgLV = (ListView) dialog.findViewById(R.id.listViewMesg);
-                internetLV = (ListView) dialog.findViewById(R.id.listViewInternet);
 
                 try {
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(),
-                            R.layout.simple_multiselect_listview, arrayCall);
-                    callLV.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-                    callLV.setAdapter(adapter);
 
-                    ArrayAdapter<String> adapter2 = new ArrayAdapter<>(getApplicationContext(),
-                            R.layout.simple_multiselect_listview, arrayMesg);
-                    mesgLV.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-                    mesgLV.setAdapter(adapter2);
+                    DialogFragment dialogFragment = new FragmentPlansPicker();
+                    dialogFragment.setArguments(plansBundle);
+                    dialogFragment.show(getSupportFragmentManager(), "planPicker");
 
-                    ArrayAdapter<String> adapter3 = new ArrayAdapter<>(getApplicationContext(),
-                            R.layout.simple_multiselect_listview, arrayInternet);
-                    internetLV.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-                    internetLV.setAdapter(adapter3);
-
-                    TabHost tabs = (TabHost) dialog.findViewById(R.id.tabHost);
-
-                    tabs.setup();
-
-                    TabHost.TabSpec tabpage1 = tabs.newTabSpec("one");
-                    tabpage1.setContent(R.id.listViewCall);
-                    tabpage1.setIndicator("Call");
-
-                    TabHost.TabSpec tabpage2 = tabs.newTabSpec("two");
-                    tabpage2.setContent(R.id.listViewMesg);
-                    tabpage2.setIndicator("Message");
-
-                    TabHost.TabSpec tabpage3 = tabs.newTabSpec("two");
-                    tabpage3.setContent(R.id.listViewInternet);
-                    tabpage3.setIndicator("Internet");
-
-                    tabs.addTab(tabpage1);
-                    tabs.addTab(tabpage2);
-                    tabs.addTab(tabpage3);
-
-                    dialog.show();
                 } catch (NullPointerException exception) {
+
+                    exception.printStackTrace();
                     final Snackbar snackBar = Snackbar.make(mLayout, "Select Data plan first",
                             Snackbar.LENGTH_LONG);
 
@@ -394,25 +353,24 @@ public class UserTelecomDetailsActivity extends AppCompatActivity {
             ArrayList<String> listPlansCalls = new ArrayList<>();
             ArrayList<String> listPlansMesg = new ArrayList<>();
             ArrayList<String> listPlansInternet = new ArrayList<>();
-
             for (int i = 0; i < listPlanDetails.size(); i++) {
                 String planDesc = null;
+                String[] arr;
 
                 try {
                     JSONObject jsonObject = new JSONObject(listPlanDetails.get(i)
                             .getPlanDetails());
-                    planDesc = "Rs." + jsonObject.getString("recharge_value") + "\nDescription: "
+                    planDesc = jsonObject.getString("id") + "abcdeRs."
+                            + jsonObject.getString("recharge_value") + "\nDescription: "
                             + jsonObject.getString("recharge_description");
 
                     if (jsonObject.getString("recharge_short_description").equals("SMS Pack")) {
                         listPlansMesg.add(planDesc);
-                    }
-                    else if (Arrays.asList(patternDataPlans)
+
+                    } else if (Arrays.asList(patternDataPlans)
                             .contains(jsonObject.getString("recharge_short_description"))) {
                         listPlansInternet.add(planDesc);
-                    }
-                    else
-                    {
+                    } else {
                         listPlansCalls.add(planDesc);
                     }
 
@@ -425,6 +383,11 @@ public class UserTelecomDetailsActivity extends AppCompatActivity {
             arrayCall = listPlansCalls.toArray(new String[listPlansCalls.size()]);
             arrayMesg = listPlansMesg.toArray(new String[listPlansMesg.size()]);
             arrayInternet = listPlansInternet.toArray(new String[listPlansInternet.size()]);
+
+            plansBundle = new Bundle();
+            plansBundle.putStringArrayList("listPlanCalls", listPlansCalls);
+            plansBundle.putStringArrayList("listPlanMesg", listPlansMesg);
+            plansBundle.putStringArrayList("listPlanInternet", listPlansInternet);
 
         }
     }
@@ -441,7 +404,7 @@ public class UserTelecomDetailsActivity extends AppCompatActivity {
                 restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
                 return restTemplate.getForObject(url, CircleList.class);
             } catch (Exception e) {
-                Log.e("UserTelecomDetailsActivity", e.getMessage(), e);
+                Log.e("UserActivity", e.getMessage(), e);
             }
 
             return null;

@@ -239,10 +239,6 @@ public class UserLogsTabs extends AppCompatActivity {
             return aggregatedLogStats;
         }
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
 
         @Override
         protected void onPostExecute(AggregatedLogStats aggregatedLogStats) {
@@ -277,51 +273,6 @@ public class UserLogsTabs extends AppCompatActivity {
         }
     }
 
-
-    private class BgAsyncTaskForBillGeneration extends AsyncTask<Void, Void, BillPlansList> {
-
-        String response;
-
-        @Override
-        protected BillPlansList doInBackground(Void... params) {
-            try {
-
-                String url = URLClass.baseURL + URLClass.dataproviderURL
-                        + ((ApplicationClass) getApplication()).getProviderName() + "/" +
-                        ((ApplicationClass) getApplication()).getCircleName() + "/"
-                        + ((ApplicationClass) getApplication()).getDays() + "/" +
-                        ((ApplicationClass) getApplication()).getDataUsage();
-                RestTemplate restTemplate = new RestTemplate(true);
-                restTemplate.getMessageConverters().add(new StringHttpMessageConverter());
-                restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-                return restTemplate.postForObject(url + "/bill", aggregatedLogStats,
-                        BillPlansList.class);
-            } catch (Exception e) {
-                Log.e("UserTelecomDetailsActivity", e.getMessage(), e);
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected void onPostExecute(BillPlansList billPlansList) {
-            super.onPostExecute(billPlansList);
-            Gson gson = new Gson();
-            Log.i("BILLS123", gson.toJson(billPlansList));
-            Toast.makeText(getApplicationContext(), billPlansList.toString(), Toast.LENGTH_SHORT)
-                    .show();
-
-            Intent i = new Intent(UserLogsTabs.this, BillList.class);
-            i.putExtra("billObject", billPlansList);
-            startActivity(i);
-
-        }
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions,

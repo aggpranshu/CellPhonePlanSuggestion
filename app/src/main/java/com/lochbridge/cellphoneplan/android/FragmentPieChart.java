@@ -1,22 +1,29 @@
+
 package com.lochbridge.cellphoneplan.android;
 
 /**
  * Created by rgupta1 on 1/6/2016.
  */
 
+import java.util.ArrayList;
+
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.client.RestTemplate;
+
+import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-
-import java.util.ArrayList;
-
-
-import android.support.v4.app.Fragment;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
@@ -26,39 +33,41 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.gson.Gson;
+import com.lochbridge.cellphoneplan.Utils.URLClass;
 import com.lochbridge.cellphoneplan.model.AggregatedLogStats;
-
+import com.lochbridge.cellphoneplan.model.BillPlansList;
 
 public class FragmentPieChart extends Fragment {
 
-
-    private Bundle data;
-    private RelativeLayout mainLayout;
-    private PieChart mChart;
-    private AggregatedLogStats aggregatedLogStats;
-    // we're going to display pie chart for smartphones martket shares
-   /* private float[] yData = { 5, 10, 15, 30, 40 };
-    private String[] xData = { "Sony", "Huawei", "LG", "Apple", "Samsung" };
-*/
-
-    private Integer[] yData;
-
-    private final String[] xData = {"Local Day Different Network", "Local Day Same Network",
+    private final String[] xData = {
+            "Local Day Different Network", "Local Day Same Network",
             "Local Day Same Network", "Local Night Different Network",
             "STD Day Same Network", "STD Day Different Network", "STD Night Same Network",
-            "STD Night Different Network"};
+            "STD Night Different Network"
+    };
+    private Button b;
+    private Bundle data;
+    private LinearLayout mainLayout;
+    private PieChart mChart;
+    // we're going to display pie chart for smartphones martket shares
+    /*
+     * private float[] yData = { 5, 10, 15, 30, 40 }; private String[] xData = { "Sony", "Huawei",
+     * "LG", "Apple", "Samsung" };
+     */
+    private AggregatedLogStats aggregatedLogStats;
+    private Integer[] yData;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
         data = this.getArguments();
 
         aggregatedLogStats = (AggregatedLogStats) data.getSerializable("logAggregationObj");
 
-
-        yData = new Integer[]{
+        yData = new Integer[] {
                 aggregatedLogStats.getLddInSeconds(),
                 aggregatedLogStats.getLdsInSeconds(), aggregatedLogStats.getLnsInSeconds(),
                 aggregatedLogStats.getLndInSeconds(), aggregatedLogStats.getSdsInSeconds(),
@@ -66,18 +75,22 @@ public class FragmentPieChart extends Fragment {
                 aggregatedLogStats.getSndInSeconds()
         };
 
-
         View v = inflater.inflate(R.layout.fragment_pie_chart,
                 container, false);
 
-        mainLayout = (RelativeLayout) v.findViewById(R.id.mainLayout);
+        mainLayout = (LinearLayout) v.findViewById(R.id.layoutPieChart);
+
+        b = (Button) v.findViewById(R.id.layoutIncluded).findViewById(R.id.buttonBill);
+
         mChart = new PieChart(getActivity());
 
         mChart.setDrawSliceText(false);
 
-
         // add pie chart to main layout
-        mainLayout.addView(mChart, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+        mainLayout
+                .addView(mChart, new RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.MATCH_PARENT,
+                        RelativeLayout.LayoutParams.MATCH_PARENT));
         mainLayout.setBackgroundColor(Color.parseColor("#55656C"));
 
         // configure pie chart
@@ -122,6 +135,15 @@ public class FragmentPieChart extends Fragment {
         l.setPosition(Legend.LegendPosition.RIGHT_OF_CHART);
         l.setXEntrySpace(7);
         l.setYEntrySpace(5);
+
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new BgAsyncTaskForBillGeneration().execute();
+                // Toast.makeText(getActivity(), "Hello Button !!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         return v;
     }
 
@@ -130,15 +152,14 @@ public class FragmentPieChart extends Fragment {
         ArrayList<String> xVals = new ArrayList<String>();
 
         for (int i = 0; i < yData.length; i++) {
-            if(yData[i]!=0){
-            yVals1.add(new Entry(yData[i], i));
+            if (yData[i] != 0) {
+                yVals1.add(new Entry(yData[i], i));
                 xVals.add(xData[i]);
             }
         }
 
-
         // create pie data set
-        PieDataSet dataSet = new PieDataSet(yVals1,"");
+        PieDataSet dataSet = new PieDataSet(yVals1, "");
         dataSet.setSliceSpace(3);
         dataSet.setSelectionShift(5);
 
@@ -165,7 +186,7 @@ public class FragmentPieChart extends Fragment {
 
         // instantiate pie data object now
         PieData data = new PieData(xVals, dataSet);
-        //data.setValueFormatter(new PercentFormatter());
+        // data.setValueFormatter(new PercentFormatter());
         data.setValueTextSize(11f);
         data.setValueTextColor(Color.GRAY);
 
@@ -179,22 +200,51 @@ public class FragmentPieChart extends Fragment {
 
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
+    private class BgAsyncTaskForBillGeneration extends AsyncTask<Void, Void, BillPlansList> {
 
+        String response;
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        @Override
+        protected BillPlansList doInBackground(Void... params) {
+            try {
+
+                String url = URLClass.baseURL + URLClass.dataproviderURL
+                        + ((ApplicationClass) getActivity().getApplication()).getProviderName()
+                        + "/" +
+                        ((ApplicationClass) getActivity().getApplication()).getCircleName() + "/" +
+                        ((ApplicationClass) getActivity().getApplication()).getDataUsage();
+                RestTemplate restTemplate = new RestTemplate(true);
+                restTemplate.getMessageConverters().add(new StringHttpMessageConverter());
+                restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+                return restTemplate.postForObject(url + "/bill", aggregatedLogStats,
+                        BillPlansList.class);
+            } catch (Exception e) {
+                Log.e("UserTelecomDetailsActivity", e.getMessage(), e);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(BillPlansList billPlansList) {
+            super.onPostExecute(billPlansList);
+            Gson gson = new Gson();
+            Log.i("BILLS123", gson.toJson(billPlansList));
+            /*
+             * Toast.makeText(getApplicationContext(), billPlansList.toString(), Toast.LENGTH_SHORT)
+             * .show();
+             */
+
+            Intent i = new Intent(getActivity(), BillList.class);
+            i.putExtra("billObject", billPlansList);
+            startActivity(i);
+
+        }
     }
 
 }

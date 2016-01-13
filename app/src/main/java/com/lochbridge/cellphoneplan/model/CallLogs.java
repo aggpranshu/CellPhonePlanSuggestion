@@ -14,8 +14,16 @@ public class CallLogs implements Serializable {
     private int durationDay;
     private int durationNight;
     private int totalCalls;
-    private int smsCount;
     private int durationInSeconds;
+    private int smsCount;
+
+    public int getSmsCount() {
+        return smsCount;
+    }
+
+    public void setSmsCount(int smsCount) {
+        this.smsCount = smsCount;
+    }
 
     public int getDurationInSeconds() {
         return durationInSeconds;
@@ -29,9 +37,6 @@ public class CallLogs implements Serializable {
         this.number = Long.valueOf(number);
     }
 
-    public void setSmsCount(int smsCount) {
-        this.smsCount = smsCount;
-    }
 
     public int getTotalCalls() {
         return totalCalls;
