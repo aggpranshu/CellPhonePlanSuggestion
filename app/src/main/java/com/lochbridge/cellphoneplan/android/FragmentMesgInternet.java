@@ -50,41 +50,45 @@ public class FragmentMesgInternet extends Fragment {
 
     private void initializeTable(AggregatedLogStats aggregatedLogStats) {
 
-        TableRow tbrow0 = new TableRow(getActivity());
-        TableRow tbrow1 = new TableRow(getActivity());
+        TableRow tbrow0 = new TableRow(getActivity().getApplicationContext());
+        TableRow tbrow1 = new TableRow(getActivity().getApplicationContext());
 
-        TextView tv0 = new TextView(getActivity());
+        TextView tv0 = new TextView(getActivity().getApplicationContext());
         tv0.setText("SMS count");
         tv0.setGravity(Gravity.CENTER);
         tv0.setTextColor(Color.BLACK);
+        tv0.setTextSize(20f);
         tbrow0.addView(tv0);
 
 
-        TextView tv1 = new TextView(getActivity());
+        TextView tv1 = new TextView(getActivity().getApplicationContext());
         tv1.setText(String.valueOf(aggregatedLogStats.getSmsCount()));
         tv1.setGravity(Gravity.CENTER);
         tv1.setTextColor(Color.BLACK);
-
+        tv0.setTextSize(20f);
         tbrow0.addView(tv1);
 
 
-        TextView tv2 = new TextView(getActivity());
+        TextView tv2 = new TextView(getActivity().getApplicationContext());
         tv2.setText("Data Usage");
         tv2.setGravity(Gravity.CENTER);
         tv2.setGravity(Gravity.CENTER);
         tv2.setTextColor(Color.BLACK);
+        tv0.setTextSize(20f);
         tbrow1.addView(tv2);
 
 
-        TextView tv3 = new TextView(getActivity());
+        TextView tv3 = new TextView(getActivity().getApplicationContext());
         tv3.setText(((ApplicationClass) getActivity().getApplication()).getDataUsage());
         tv3.setGravity(Gravity.CENTER);
         tv3.setTextColor(Color.BLACK);
+        tv0.setTextSize(20f);
         tbrow1.addView(tv3);
 
-        stk.addView(tbrow0, new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT,
-                TableLayout.LayoutParams.WRAP_CONTENT));
+        stk.addView(tbrow0, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
+                TableLayout.LayoutParams.MATCH_PARENT));
 
-
+        stk.addView(tbrow1, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
+                TableLayout.LayoutParams.MATCH_PARENT));
     }
 }

@@ -100,7 +100,7 @@ public class SplashScreen extends AwesomeSplash {
 
 
 
-            } catch (NullPointerException e) {
+            } catch (Exception e) {
                 Toast.makeText(getApplicationContext(), "OOPS ! Something went wrong.",
                         Toast.LENGTH_SHORT).show();
             }

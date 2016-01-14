@@ -11,6 +11,7 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -139,6 +140,9 @@ public class FragmentPieChart extends Fragment {
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ProgressDialog dialog = new ProgressDialog(getActivity());
+                dialog.setMessage("Loading data...");
+                dialog.show();
                 new BgAsyncTaskForBillGeneration().execute();
                 // Toast.makeText(getActivity(), "Hello Button !!", Toast.LENGTH_SHORT).show();
             }

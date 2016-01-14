@@ -119,7 +119,6 @@ public class FragmentPlansPicker extends DialogFragment {
                         selectedItemsCalls.add(adapter.getItem(position1).split("abcde")[0]);
                     Log.i("SparseBoolean", String.valueOf(selectedItemsCalls.size()));
                 }
-                Toast.makeText(getActivity(), "Hello", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -160,24 +159,17 @@ public class FragmentPlansPicker extends DialogFragment {
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(getActivity(), "Plans selected", Toast.LENGTH_SHORT).show();
 
                 ArrayList<String> listUserPlan = new ArrayList<String>();
-                listUserPlan.addAll(selectedItemsCalls);
+
+                if(selectedItemsCalls != null){
+                listUserPlan.addAll(selectedItemsCalls);}
+
+                if(selectedItemsMesg != null)
                 listUserPlan.addAll(selectedItemsInternet);
+
+                if(selectedItemsInternet != null)
                 listUserPlan.addAll(selectedItemsMesg);
-
-                /*for (int i = 0; i < selectedItemsCalls.size(); i++) {
-                    Log.i("Selected Items id", selectedItemsCalls.get(i));
-                }
-
-                for (int i = 0; i < selectedItemsMesg.size(); i++) {
-                    Log.i("Selected Items id", selectedItemsMesg.get(i));
-                }
-
-                for (int i = 0; i < selectedItemsInternet.size(); i++) {
-                    Log.i("Selected Items id", selectedItemsInternet.get(i));
-                }*/
 
                 new BGTaskUserPlanInfo().execute(listUserPlan);
             }

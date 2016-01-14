@@ -1,6 +1,7 @@
 package com.lochbridge.cellphoneplan.model;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -8,13 +9,13 @@ import java.util.List;
  */
 public class BillPlansList implements Serializable {
 
-    private List<BillPlans> bill;
+    private HashSet<BillPlans> bill;
 
-    public List<BillPlans> getBill() {
+    public HashSet<BillPlans> getBill() {
         return bill;
     }
 
-    public void setBill(List<BillPlans> bill) {
+    public void setBill(HashSet<BillPlans> bill) {
         this.bill = bill;
     }
 }

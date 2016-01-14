@@ -4,6 +4,7 @@ package com.lochbridge.cellphoneplan.model;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -11,8 +12,8 @@ import java.util.Date;
  */
 public class CallLogs implements Serializable {
     private Long number;
-    private int durationDay;
-    private int durationNight;
+    private ArrayList<Integer> durationDay;
+    private ArrayList<Integer> durationNight;
     private int totalCalls;
     private int durationInSeconds;
     private int smsCount;
@@ -25,15 +26,9 @@ public class CallLogs implements Serializable {
         this.smsCount = smsCount;
     }
 
-    public int getDurationInSeconds() {
-        return durationInSeconds;
-    }
-
-    public void setDurationInSeconds(int durationInSeconds) {
-        this.durationInSeconds = durationInSeconds;
-    }
-
     public CallLogs(String number) {
+        durationDay = new ArrayList<>();
+        durationNight = new ArrayList<>();
         this.number = Long.valueOf(number);
     }
 
@@ -46,20 +41,29 @@ public class CallLogs implements Serializable {
         this.totalCalls = totalCalls;
     }
 
-    public int getDurationDay() {
+    public ArrayList<Integer> getDurationDay() {
         return durationDay;
     }
 
-    public void setDurationDay(int durationDay) {
+    public void setDurationDay(ArrayList<Integer> durationDay) {
         this.durationDay = durationDay;
     }
 
-    public int getDurationNight() {
+    public ArrayList<Integer> getDurationNight() {
         return durationNight;
     }
 
-    public void setDurationNight(int durationNight) {
+    public void setDurationNight(ArrayList<Integer> durationNight) {
         this.durationNight = durationNight;
+    }
+
+
+    public int getDurationInSeconds() {
+        return durationInSeconds;
+    }
+
+    public void setDurationInSeconds(int durationInSeconds) {
+        this.durationInSeconds = durationInSeconds;
     }
 
     public Long getNumber() {
@@ -72,7 +76,7 @@ public class CallLogs implements Serializable {
 
     public void setDuration(int duration, Date d) {
 
-        durationInSeconds += duration;
+        durationInSeconds+= duration;
 
         this.totalCalls += Math.ceil(Double.valueOf(duration) / 60.0);
 
@@ -90,9 +94,9 @@ public class CallLogs implements Serializable {
         }
 
         if (currentTime.after(startTime) && currentTime.after(endTime)) {
-            durationNight += duration;
+            durationNight.add(duration);
         } else
-            durationDay += duration;
+            durationDay.add(duration);
     }
 
 }

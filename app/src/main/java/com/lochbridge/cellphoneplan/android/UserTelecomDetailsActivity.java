@@ -43,10 +43,6 @@ import com.lochbridge.cellphoneplan.model.PlanDetailsList;
 
 public class UserTelecomDetailsActivity extends AppCompatActivity {
 
-    static int i = 0;
-    private String[] arrayCall;
-    private String[] arrayMesg;
-    private String[] arrayInternet;
     private ProgressDialog dialog;
     private CardView providerCV;
     private CardView circleCV;
@@ -163,7 +159,6 @@ public class UserTelecomDetailsActivity extends AppCompatActivity {
 
                 DisplayMetrics displayMetrics = new DisplayMetrics();
                 getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-                Toast.makeText(getApplicationContext(), "dialog", Toast.LENGTH_SHORT).show();
                 // custom dialog
 
                 // declaration of multi select spinners
@@ -213,8 +208,6 @@ public class UserTelecomDetailsActivity extends AppCompatActivity {
                 String item = parent.getItemAtPosition(position).toString();
 
                 if (item.equals("List of Providers")) {
-                    Toast.makeText(getApplicationContext(), String.valueOf(position),
-                            Toast.LENGTH_SHORT).show();
                     // spinnerDuration.setVisibility(View.VISIBLE);
                     // spinnerDuration.setVisibility(View.INVISIBLE);
                 } else {
@@ -283,12 +276,12 @@ public class UserTelecomDetailsActivity extends AppCompatActivity {
 
     }
 
-    @Override
+  /*  @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         callbackManager.onActivityResult(requestCode, resultCode, data);
-    }
+    }*/
 
-    private void setupTokenTracker() {
+    /*private void setupTokenTracker() {
         AccessTokenTracker mTokenTracker = new AccessTokenTracker() {
             @Override
             protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken,
@@ -296,22 +289,22 @@ public class UserTelecomDetailsActivity extends AppCompatActivity {
 
             }
         };
-    }
+    }*/
 
     private void setupProfileTracker() {
-        ProfileTracker mProfileTracker = new ProfileTracker() {
+      /*  ProfileTracker mProfileTracker = new ProfileTracker() {
             @Override
             protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
                 // info.setText("Welcome" + currentProfile.getFirstName() + " " +
                 // currentProfile.getLastName());
             }
-        };
+        };*/
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
-        Profile profile = Profile.getCurrentProfile();
+      //  Profile profile = Profile.getCurrentProfile();
         // info.setText("Welcome Back user !");
 
     }
@@ -379,10 +372,6 @@ public class UserTelecomDetailsActivity extends AppCompatActivity {
                 }
 
             }
-
-            arrayCall = listPlansCalls.toArray(new String[listPlansCalls.size()]);
-            arrayMesg = listPlansMesg.toArray(new String[listPlansMesg.size()]);
-            arrayInternet = listPlansInternet.toArray(new String[listPlansInternet.size()]);
 
             plansBundle = new Bundle();
             plansBundle.putStringArrayList("listPlanCalls", listPlansCalls);

@@ -1,6 +1,14 @@
 
 package com.lochbridge.cellphoneplan.android;
 
+import java.util.HashSet;
+import java.util.Iterator;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.client.RestTemplate;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -16,19 +24,10 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
+import com.lochbridge.cellphoneplan.Utils.URLClass;
 import com.lochbridge.cellphoneplan.model.BillPlans;
 import com.lochbridge.cellphoneplan.model.BillPlansList;
 import com.lochbridge.cellphoneplan.model.PlanDetails;
-import com.lochbridge.cellphoneplan.Utils.URLClass;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class BillList extends AppCompatActivity {
 
@@ -42,32 +41,20 @@ public class BillList extends AppCompatActivity {
 
         BillPlansList billPlansList = (BillPlansList) getIntent()
                 .getSerializableExtra("billObject");
-        List<BillPlans> initialBillPlans = billPlansList.getBill();
-        Log.i("BILLSINBILLCLASS", initialBillPlans.toString());
 
-        BillPlans basicBill = initialBillPlans.get(0);
+        HashSet<BillPlans> refinedBillPlans = billPlansList.getBill();
 
-        List<BillPlans> refinedBillPlans = new ArrayList<BillPlans>();
-
-        /*for(int i = 3;i< initialBillPlans.size();i++){
-            if(basicBill.getBill()< initialBillPlans.get(i).getBill()){
-                refinedBillPlans.add(0,basicBill);
-                refinedBillPlans.add(1, initialBillPlans.get(1));
-                refinedBillPlans.add(2, initialBillPlans.get(2));
-            }
-            else
-            {
-                refinedBillPlans.add(i, initialBillPlans.get(i));
-            }
-
-        }*/
-
+        /*
+         * for(int i = 3;i< initialBillPlans.size();i++){ if(basicBill.getBill()<
+         * initialBillPlans.get(i).getBill()){ refinedBillPlans.add(0,basicBill);
+         * refinedBillPlans.add(1, initialBillPlans.get(1)); refinedBillPlans.add(2,
+         * initialBillPlans.get(2)); } else { refinedBillPlans.add(i, initialBillPlans.get(i)); } }
+         */
 
         initializeTable(refinedBillPlans);
     }
 
-    private void initializeTable(final List<BillPlans> billPlans) {
-
+    private void initializeTable(final HashSet<BillPlans> billPlans) {
 
         TextView t1v, t2v, t3v, t4v;
         TableRow tbrow0 = new TableRow(this);
@@ -96,11 +83,15 @@ public class BillList extends AppCompatActivity {
         stk.addView(tbrow0, new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT,
                 TableLayout.LayoutParams.WRAP_CONTENT));
 
-        for (int i = 0; i < billPlans.size(); i++) {
+        Iterator<BillPlans> iterator = billPlans.iterator();
+        while (iterator.hasNext()) {
+
+            BillPlans billPlansObj = iterator.next();
+
             TableRow tbrow = new TableRow(this);
 
             final Button buttonID = new Button(this);
-            buttonID.setText(billPlans.get(i).getId().toString());
+            buttonID.setText(billPlansObj.getId().toString());
             buttonID.setTextColor(Color.WHITE);
             buttonID.setGravity(Gravity.LEFT);
             buttonID.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
@@ -116,7 +107,7 @@ public class BillList extends AppCompatActivity {
             });
 
             Button buttonBill = new Button(this);
-            buttonBill.setText(billPlans.get(i).getBill().toString());
+            buttonBill.setText(billPlansObj.getBill().toString());
             buttonBill.setTextColor(Color.WHITE);
             buttonBill.setGravity(Gravity.LEFT);
             buttonBill.setLayoutParams(new TableRow.LayoutParams(
@@ -126,7 +117,7 @@ public class BillList extends AppCompatActivity {
             tbrow.addView(buttonBill);
 
             Button buttonRate = new Button(this);
-            buttonRate.setText(billPlans.get(i).getRechargeRate().toString());
+            buttonRate.setText(billPlansObj.getRechargeRate().toString());
             buttonRate.setTextColor(Color.WHITE);
             buttonRate.setGravity(Gravity.LEFT);
             buttonRate.setLayoutParams(new TableRow.LayoutParams(
@@ -136,7 +127,7 @@ public class BillList extends AppCompatActivity {
             tbrow.addView(buttonRate);
 
             Button buttonValidity = new Button(this);
-            buttonValidity.setText(String.valueOf(billPlans.get(i).getType()));
+            buttonValidity.setText(String.valueOf(billPlansObj.getType()));
             buttonValidity.setTextColor(Color.WHITE);
             buttonValidity.setGravity(Gravity.LEFT);
             buttonValidity.setLayoutParams(new TableRow.LayoutParams(
@@ -157,8 +148,7 @@ public class BillList extends AppCompatActivity {
             try {
                 String url = URLClass.baseURL + URLClass.dataproviderURL
                         + ((ApplicationClass) getApplication()).getProviderName() + "/" +
-                        ((ApplicationClass) getApplication()).getCircleName() + "/"
-                        + ((ApplicationClass) getApplication()).getDays()
+                        ((ApplicationClass) getApplication()).getCircleName()
                         + "/" + params[0];
                 RestTemplate restTemplate = new RestTemplate();
                 restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
