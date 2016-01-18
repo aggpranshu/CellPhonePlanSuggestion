@@ -7,7 +7,7 @@ import android.app.Activity;
  */
 public interface URLClass {
 
-    public static String baseURL = "http://192.168.1.147:8080/SpringHibernate/";
+    public static String baseURL = "http://192.168.1.120:8080/SpringHibernateV1.0/";
     public static String UserPlanURL = "/userPlanList";
     public static String userDataURL = "user/data/";
     public static String aggregationURL = "logaggregation";

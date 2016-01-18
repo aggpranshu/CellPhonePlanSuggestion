@@ -90,6 +90,10 @@ public class BillList extends AppCompatActivity {
 
             TableRow tbrow = new TableRow(this);
 
+            View v=new View(this);
+            v.setBackgroundColor(Color.BLACK);
+            v.setLayoutParams(new TableLayout.LayoutParams(5,5));
+
             final Button buttonID = new Button(this);
             buttonID.setText(billPlansObj.getId().toString());
             buttonID.setTextColor(Color.WHITE);
@@ -138,6 +142,7 @@ public class BillList extends AppCompatActivity {
 
             stk.addView(tbrow, new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT,
                     TableLayout.LayoutParams.WRAP_CONTENT));
+            stk.addView(v);
         }
     }
 
